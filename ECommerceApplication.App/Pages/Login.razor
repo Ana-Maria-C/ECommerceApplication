@@ -1,0 +1,108 @@
+﻿@page "/login"
+@using ECommerceApplication.App.Auth
+@using ECommerceApplication.App.ViewModels
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    /* body {
+        background-color: #D8BFD8;
+    } */
+
+    .login-container {
+        max-width: 400px;
+        margin: auto;
+        margin-top: 5%;
+        background-color: #ffffff;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-title {
+        text-align: center;
+        color: #800080; 
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .form-signin {
+        padding: 15px;
+    }
+
+    .btn-primary {
+        background-color: #9370DB; 
+        border-color: #9370DB; 
+    }
+
+        .btn-primary:hover {
+            background-color: #7B68EE; 
+            border-color: #7B68EE; 
+        }
+
+    .password-toggle {
+        position: relative;
+    }
+
+        .password-toggle span {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9370DB; 
+        }
+</style>
+
+<div class="login-container">
+    <h1 class="login-title">Login</h1>
+
+    <EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="loginRequest">
+        <DataAnnotationsValidator />
+
+        <label for="inputUsername" class="sr-only">Username</label>
+        <InputText id="inputUsername" class="form-control" @bind-Value="loginRequest.Username" autofocus placeholder="Username" />
+        <ValidationMessage For="@(() => loginRequest.Username)" />
+
+        <label for="inputPassword" class="sr-only">Password</label>
+        <div class="input-group password-toggle">
+            <InputText type="@((showPassword) ? "text" : "password")" id="inputPassword" class="form-control" placeholder="Password" @bind-Value="loginRequest.Password" />
+            <span @onclick="TogglePasswordVisibility">@((showPassword) ? "HIDE" : "SHOW")</span>
+        </div>
+        <ValidationMessage For="@(() => loginRequest.Password)" />
+        <br />
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <div class="text-center mt-3">
+            <NavLink href="register" class="btn btn-lg btn-primary btn-block">
+                <h6 class="cool-link">Create account</h6>
+            </NavLink>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    LoginViewModel loginRequest { get; set; } = new LoginViewModel();
+    string error { get; set; }
+    bool showPassword { get; set; } = false;
+
+    async Task OnSubmit()
+    {
+        error = null;
+        try
+        {
+            await authStateProvider.Login(loginRequest);
+            navigationManager.NavigateTo("/", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+    void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+}

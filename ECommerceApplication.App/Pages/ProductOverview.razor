@@ -1,0 +1,289 @@
+﻿@page "/productoverview"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="all-products">
+    <div class="filters-sidebar">
+        <div class="sidebar-card">
+            <div class="filters-element">
+                <p id="filters-text-p">Filters</p>
+            </div>
+            <div class="filters-element">
+                <label class="filter-text" for="categoryFilter">Category:</label>
+                <select id="categoryFilter" @onchange="FilterByCategory">
+                    <option value="">All Categories</option>
+                    @foreach (var category in GetUniqueCategories())
+                    {
+                        <option value="@category">@category</option>
+                    }
+                </select>
+            </div>
+            <div class="filters-element">
+                <label class="filter-text" for="minPrice">Min Price:</label>
+                <input class="filter-input" type="number" id="minPrice" @bind="minPrice" @oninput="FilterByPrice" @onkeyup="OnEnterKeyPressed" />
+            </div>
+            <div class="filters-element">
+                <label class="filter-text" for="maxPrice">Max Price:</label>
+                <input class="filter-input" type="number" id="maxPrice" @bind="maxPrice" @oninput="FilterByPrice" @onkeyup="OnEnterKeyPressed" />
+            </div>
+        </div>
+    </div>
+    <div class="products-main-content">
+        <div class="sorting-container">
+            <label class="sorting-label" for="sortDropdown">Sort by:</label>
+            <select class="sorting-select" id="sortDropdown" @onchange="SortProducts">
+                <option class="sorting-option" value="name">Name</option>
+                <option class="sorting-option" value="price-asc">Price (Low to High)</option>
+                <option class="sorting-option" value="price-desc">Price (High to Low)</option>
+            </select>
+        </div>
+        <div class="products-content-container">
+            @if (Products == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                @if (AlertMessage.IsEnabled)
+                {
+                    <div class="alert alert-@AlertMessage.type alert-dismissible fade show" role="alert">
+                        @AlertMessage.Message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="CloseAlert"></button>
+                    </div>
+                }
+                <div class="product-container">
+                    @foreach (var prod in Products)
+                    {
+                        <div class="product-card" @onclick="() => NavigateToProductDetail(prod.ProductId)">
+                            <div class="product-image-container">
+                                <img src="@prod.ImageUrl" alt="@prod.ProductName" class="product-image" />
+                            </div>
+                            <div class="product-details">
+                                <div class="product-name-container">
+                                    <h4 class="product-name">@prod.ProductName</h4>
+                                </div>
+                                <div class="product-price-container">
+                                    <p class="product-price">$@prod.Price</p>
+                                </div>
+                                <div class="product-button-container">
+                                    <button class="add-to-cart-button" @onclick:preventDefault @onclick:stopPropagation @onclick="() => AddToCart(prod)" disabled="@prod.IsAddingToCart">
+                                        @if (prod.IsAddingToCart)
+                                        {
+                                            <span class="adding-to-cart-text">Adding...</span>
+                                        }
+                                        else
+                                        {
+                                            <svg class="shopping-cart-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1" />
+                                            </svg>
+                                            <span>Add to Cart</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+    
+
+
+@code {
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public ITokenService TokenService { get; set; }
+
+    [Inject]
+    public IShoppingCartDataService ShoppingCartDataService { get; set; }
+
+    [Inject] 
+    public IPhotoDataService PhotoDataService { get; set; }
+
+    public List<ProductViewModel> Products { get; set; }
+    public List<ProductViewModel> ProductsCopy { get; set; }
+    public AlertMessage AlertMessage;
+
+    private string selectedSortOption = "name";
+    private string selectedCategory = "";
+    private int? minPrice;
+    private int? maxPrice;
+}
+
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        AlertMessage = new AlertMessage
+            {
+                IsEnabled = false,
+                Message = ""
+            };
+        // Fetch all products initially
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        Products = (await ProductDataService.GetProductAsync()).ToList();
+        
+        foreach (var product in Products)
+        {
+	        var photoResponse = await PhotoDataService.GetPhotoForOwnerAsync(product.ProductId);
+
+	        if (photoResponse.IsSuccess)
+	        {
+		        Console.WriteLine("S-a dat fetch");
+		        product.ImageUrl = $"data:image/png;base64,{photoResponse.Data[0].ImageData}";
+	        }
+        }
+        
+        ProductsCopy = Products;
+
+        var filteredProducts = Products;
+
+        if (!string.IsNullOrEmpty(selectedCategory))
+        {
+            filteredProducts = filteredProducts.Where(p => p.Category.CategoryName == selectedCategory).ToList();
+        }
+
+        if (minPrice.HasValue)
+        {
+            filteredProducts = filteredProducts.Where(p => p.Price >= minPrice).ToList();
+        }
+
+        if (maxPrice.HasValue)
+        {
+            filteredProducts = filteredProducts.Where(p => p.Price <= maxPrice).ToList();
+        }
+
+        Products = filteredProducts.ToList();
+
+        switch (selectedSortOption)
+        {
+            case "name":
+                Products = Products.OrderBy(p => p.ProductName).ToList();
+                break;
+            case "price-asc":
+                Products = Products.OrderBy(p => p.Price).ToList();
+                break;
+            case "price-desc":
+                Products = Products.OrderByDescending(p => p.Price).ToList();
+                break;
+        }
+    }
+
+    private IEnumerable<string> GetUniqueCategories()
+    {
+        return ProductsCopy?.Select(p => p.Category.CategoryName).Distinct() ?? Enumerable.Empty<string>(); ;
+    }
+
+    private async Task FilterByCategory(ChangeEventArgs e)
+    {
+        selectedCategory = e.Value.ToString();
+        await LoadProducts();
+    }
+
+    private async Task FilterByPrice()
+    {
+        await LoadProducts();
+    }
+
+    private async Task OnEnterKeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadProducts();
+        }
+    }
+
+    private async Task AddToCart(ProductViewModel product)
+    {
+        product.IsAddingToCart = true;
+
+        StateHasChanged();
+        await Task.Delay(250);
+
+        OrderItemViewModel orderItem = new OrderItemViewModel
+            {
+                ProductId = product.ProductId,
+                Quantity = 1,
+                PricePerUnit = product.Price
+            };
+
+        await AddOrderItemToCart(orderItem);
+
+        product.IsAddingToCart = false;
+    }
+
+
+    public async Task AddOrderItemToCart(OrderItemViewModel orderItem)
+    {
+        try
+        {
+            if (orderItem.Quantity == null || orderItem.Quantity <= 0)
+            {
+                UpdateAddToCartMessage(false, "Select a valid quantity");
+                return;
+            }
+            var token = await TokenService.GetTokenAsync();
+            Guid userId = await TokenService.DecodeUserIdFromTokenAsync(token);
+            if (userId == null || userId == Guid.Empty)
+            {
+                UpdateAddToCartMessage(false, "Eroor reading the user, try to log in again");
+                return;
+            }
+            var shoppingCart = await ShoppingCartDataService.GetShoppingCartByUserIdAsync(userId);
+            var result = await OrderItemDataService.CreateOrderItemAsync(orderItem);
+            if (!result.IsSuccess)
+            {
+                UpdateAddToCartMessage(false, "Error adding to cart");
+                return;
+            }
+            OrderItemDto createdOrderItem = result.Data;
+            var shoppingCartViewModel = await ShoppingCartDataService.AttachOrderItemById(shoppingCart.ShoppingCartId, createdOrderItem);
+            UpdateAddToCartMessage(true, "Added to cart");
+        }
+        catch (Exception e)
+        {
+            UpdateAddToCartMessage(false, "Error adding to cart");
+            Console.WriteLine(e);
+        }
+    }
+
+    protected void UpdateAddToCartMessage(bool isSucces, string message)
+    {
+        AlertMessage.type = isSucces ? "success" : "danger";
+        AlertMessage.IsEnabled = true;
+        AlertMessage.IsSuccess = isSucces;
+        AlertMessage.Message = message;
+        StateHasChanged();
+    }
+
+    private void NavigateToProductDetail(Guid productId)
+    {
+        NavigationManager.NavigateTo($"/productdetail/{productId}");
+    }
+
+    private void CloseAlert(MouseEventArgs e)
+    {
+        AlertMessage.IsEnabled = false;
+        StateHasChanged();
+    }
+
+    private async Task SortProducts(ChangeEventArgs e)
+    {
+        selectedSortOption = e.Value.ToString();
+        await LoadProducts();
+    }
+}

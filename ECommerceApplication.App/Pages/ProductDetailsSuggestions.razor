@@ -1,0 +1,198 @@
+﻿@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<div class="products-suggestions">
+    <div class="promo-container">
+        <h2>You might also be interested</h2>
+        <div class="products-suggestion-cards-container">
+            @if (Products != null && Categories != null)
+            {
+                var suggestions = GetRandomCategorySuggestions(ProductId);
+                foreach (var suggestion in suggestions.Take(6))
+                {
+                    <div class="home-product-card" @onclick="() => NavigateToProductDetail(suggestion.ProductId)">
+                        <div class="product-image-container">
+                            <img src="@suggestion.ImageUrl" alt="@suggestion.ProductName" class="product-image" />
+                        </div>
+                        <div class="product-details">
+                            <div class="product-name-container">
+                                <h4 class="product-name">@suggestion.ProductName</h4>
+                            </div>
+                            <div class="product-price-container">
+                                <p class="product-price">$@suggestion.Price</p>
+                            </div>
+                            <div class="product-button-container">
+                                <button class="add-to-cart-button" @onclick:preventDefault @onclick:stopPropagation @onclick="() => AddToCart(suggestion)" disabled="@suggestion.IsAddingToCart">
+                                    @if (suggestion.IsAddingToCart)
+                                    {
+                                        <span class="adding-to-cart-text">Adding...</span>
+                                    }
+                                    else
+                                    {
+                                        <svg class="shopping-cart-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1" />
+                                        </svg>
+                                        <span>Add to Cart</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>    
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid ProductId { get; set; }
+
+    [Inject]
+    public ICategoryDataService CategoryDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+
+    [Inject]
+    public ITokenService TokenService { get; set; }
+
+    [Inject]
+    public IShoppingCartDataService ShoppingCartDataService { get; set; }
+
+    [Inject]
+    public IPhotoDataService PhotoDataService { get; set; }
+
+    public List<CategoryViewModel> Categories { get; set; }
+    public List<ProductViewModel> Products { get; set; }
+    public AlertMessage AlertMessage;
+}
+
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+        await LoadCategories();
+
+        AlertMessage = new AlertMessage
+            {
+                IsEnabled = false,
+                Message = ""
+            };
+    }
+
+    private async Task LoadProducts()
+    {
+        Products = (await ProductDataService.GetProductAsync()).ToList();
+
+        foreach (var product in Products)
+        {
+            var photoResponse = await PhotoDataService.GetPhotoForOwnerAsync(product.ProductId);
+
+            if (photoResponse.IsSuccess)
+            {
+                Console.WriteLine("S-a dat fetch");
+                product.ImageUrl = $"data:image/png;base64,{photoResponse.Data[0].ImageData}";
+            }
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        Categories = (await CategoryDataService.GetCategoriesAsync()).ToList();
+    }
+
+    private IEnumerable<ProductViewModel> GetRandomCategorySuggestions(Guid productId)
+    {
+        var productCategory = Products.FirstOrDefault(p => p.ProductId == productId)?.Category.CategoryId;
+
+        var categoryProducts = Products.Where(p => p.Category.CategoryId == productCategory && p.ProductId != productId);
+
+        var random = new Random();
+        var shuffledProducts = categoryProducts.OrderBy(p => random.Next());
+
+        return shuffledProducts;
+    }
+
+    private async Task AddToCart(ProductViewModel product)
+    {
+        product.IsAddingToCart = true;
+
+        StateHasChanged();
+        await Task.Delay(250);
+
+        OrderItemViewModel orderItem = new OrderItemViewModel
+            {
+                ProductId = product.ProductId,
+                Quantity = 1,
+                PricePerUnit = product.Price
+            };
+
+        await AddOrderItemToCart(orderItem);
+
+        product.IsAddingToCart = false;
+    }
+
+
+    public async Task AddOrderItemToCart(OrderItemViewModel orderItem)
+    {
+        try
+        {
+            if (orderItem.Quantity == null || orderItem.Quantity <= 0)
+            {
+                UpdateAddToCartMessage(false, "Select a valid quantity");
+                return;
+            }
+            var token = await TokenService.GetTokenAsync();
+            Guid userId = await TokenService.DecodeUserIdFromTokenAsync(token);
+            if (userId == null || userId == Guid.Empty)
+            {
+                UpdateAddToCartMessage(false, "Eroor reading the user, try to log in again");
+                return;
+            }
+            var shoppingCart = await ShoppingCartDataService.GetShoppingCartByUserIdAsync(userId);
+            var result = await OrderItemDataService.CreateOrderItemAsync(orderItem);
+            if (!result.IsSuccess)
+            {
+                UpdateAddToCartMessage(false, "Error adding to cart");
+                return;
+            }
+            OrderItemDto createdOrderItem = result.Data;
+            var shoppingCartViewModel = await ShoppingCartDataService.AttachOrderItemById(shoppingCart.ShoppingCartId, createdOrderItem);
+            UpdateAddToCartMessage(true, "Added to cart");
+        }
+        catch (Exception e)
+        {
+            UpdateAddToCartMessage(false, "Error adding to cart");
+            Console.WriteLine(e);
+        }
+    }
+
+    protected void UpdateAddToCartMessage(bool isSucces, string message)
+    {
+        AlertMessage.type = isSucces ? "success" : "danger";
+        AlertMessage.IsEnabled = true;
+        AlertMessage.IsSuccess = isSucces;
+        AlertMessage.Message = message;
+        StateHasChanged();
+    }
+
+    private void NavigateToProductDetail(Guid productId)
+    {
+        ProductId = productId;
+        NavigationManager.NavigateTo($"/productdetail/{productId}");
+
+    }
+
+    private void CloseAlert(MouseEventArgs e)
+    {
+        AlertMessage.IsEnabled = false;
+        StateHasChanged();
+    }
+}

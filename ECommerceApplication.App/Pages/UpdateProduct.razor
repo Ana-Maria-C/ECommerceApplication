@@ -1,0 +1,153 @@
+﻿@page "/updateproduct"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>Update Product</h3>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3"> 
+                <label for="productId" class="form-label">Product</label>
+                <InputSelect @bind-Value="@StringProductId" @bind-Value:after="SelectProduct"
+                             class="form-select" id="productid" placeholder="select a product">
+                    <option selected disabled value="">Select a product...</option>
+                    @foreach (var product in Products)
+                    {
+                        <option value="@product.ProductId.ToString()">@product.ProductName</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label for="newProductName" class="form-label">New Product Name</label>
+                <input type="text" disabled="@DisableProductFields()" class="form-control" @bind="Product.ProductName" id="newProductName" />
+            </div>
+            <div class="mb-3">
+                <label for="newProductPrice" class="form-label">New Product Price</label>
+                <input type="number" disabled="@DisableProductFields()" class="form-control" @bind="Product.Price" id="newProductPrice" />
+            </div>
+            <div class="mb-3">
+                <label for="newProductDescription" class="form-label">New Product Description</label>
+                <input type="text" disabled="@DisableProductFields()" class="form-control" @bind="Product.Description" id="newProductDescription" />
+            </div>
+            <div class="mb-3">
+                <label for="newProductImage" class="form-label">New Product Image</label>
+                <input type="text" disabled="@DisableProductFields()" class="form-control" @bind="Product.ImageUrl" id="newProductImage" />
+            </div>
+            <div class="mb-3">
+                <label for="newProductCategoryId" class="form-label">New Product Category Id</label>
+                <InputSelect disabled="@DisableProductFields()" @bind-Value="StringCategoryId" @bind-Value:after="SelectCategory" class="form-select" id="productCategory" placeholder="select a category">
+                    <option value=""  selected disabled>Select a category...</option>
+                    @foreach (var category in Categories)
+                    {
+                        @if (category.CategoryId.Equals(Product.Category.CategoryId))
+                        {
+                            <option value="@category.CategoryId.ToString()" selected>@category.CategoryName</option>
+                        }
+                        else
+                        {
+                            <option value="@category.CategoryId.ToString()">@category.CategoryName</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+
+            <button class="btn btn-primary" @onclick="HandleUpdateProduct">Update Product</button>
+            <p class="mt-3">@updateMessage</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public ICategoryDataService CategoryDataService { get; set; }
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+    public List<ProductViewModel> Products { get; set; }
+    public List<CategoryViewModel> Categories { get; set; }
+    public String StringProductId;
+    public String StringCategoryId;
+    public Guid? ProductId { get; set; }
+    public Guid? CategoryId { get; set; }
+    public ProductViewModel? Product { get; set; }
+    private string updateMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Products = (await ProductDataService.GetProductAsync()).ToList();
+        Categories = (await CategoryDataService.GetCategoriesAsync()).ToList();
+        Product = new ProductViewModel();
+        ProductId = null;
+        CategoryId = null;
+    }
+
+    protected void SelectProduct()
+    {
+        if (!Guid.TryParse(StringProductId, out var parsedGuid))
+        {
+            ProductId = null;
+            return;
+        }
+        ProductId = parsedGuid;
+        Product = Products.FirstOrDefault(p => p.ProductId == ProductId);
+        Product.CategoryId = Product.Category.CategoryId;
+        CategoryId = Product.Category.CategoryId;
+    }
+
+    protected void SelectCategory()
+    {
+        if (!Guid.TryParse(StringCategoryId, out var parsedGuid) || Product == null)
+        {
+            CategoryId = null;
+            return;
+        }
+        Product.Category.CategoryId = parsedGuid;
+        Product.CategoryId = parsedGuid;
+        CategoryId = parsedGuid;
+    }
+
+    protected bool DisableProductFields()
+    {
+        return ProductId==null;
+    }
+
+    protected bool IsProductSelected()
+    {
+        return Product != null;
+    }
+
+    private async Task HandleUpdateProduct()
+    {
+        Console.WriteLine($"Attempting to update product with ID: {ProductId}");
+        if (!IsProductSelected() || ProductId  == null || CategoryId == null)
+        {
+            updateMessage = "Please enter a valid product ID and new product name.";
+            return;
+        }
+
+        try
+        {
+            var response = await ProductDataService.UpdateProductAsync(Product);
+
+            if (response != null && response.IsSuccess)
+            {
+                updateMessage = "Product updated successfully!";
+                // Handle success
+            }
+            else
+            {
+                updateMessage = "Failed to update product. Please try again.";
+                // Handle failure
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            updateMessage = "Failed to update product. Please try again.";
+            // Handle exception
+        }
+
+    }
+
+
+}

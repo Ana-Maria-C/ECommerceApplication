@@ -1,0 +1,63 @@
+﻿@page "/addcategory"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>New Category</h3>
+
+<EditForm Model="@CategoryViewModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <label for="categoryname" class="col-sm-3 form-label">Category Name:</label>
+            <div class="col-sm-5">
+                <InputText id="categoryname" class="form-control" @bind-Value="@CategoryViewModel.CategoryName" placeholder="Enter category name" />
+                <ValidationMessage For="@(() => CategoryViewModel.CategoryName)" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-5">
+                <button type="submit" class="btn btn-primary" style="background-color: #0d6efd; border-color: #0d6efd;">Save Category</button>
+                <button class="btn btn-secondary ms-3" @onclick="Cancel" style="background-color: #007bff; border-color: #007bff;">Cancel</button>
+            </div>
+        </div>
+        <p class="mt-3" style="color: #e83e8c; font-weight: bold;">@Message</p>
+    </div>
+</EditForm>
+
+@code {
+    [Inject]
+    public ICategoryDataService CategoryDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public CategoryViewModel CategoryViewModel { get; set; } = new CategoryViewModel();
+
+    public string Message { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await CategoryDataService.CreateCategoryAsync(CategoryViewModel);
+        if (result.IsSuccess)
+        {
+            Message = "Category created successfully";
+            NavigationManager.NavigateTo("/categoryoverview");
+        }
+        else
+        {
+            Message = result.Message;
+            if (!string.IsNullOrWhiteSpace(result.ValidationErrors))
+            {
+                Message += result.ValidationErrors;
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/categoryoverview");
+    }
+}

@@ -1,0 +1,92 @@
+﻿@page "/addaddress"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>New Address</h3>
+
+<EditForm Model="@AddressViewModel" OnValidSubmit="@HandleValidSubmit">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary></ValidationSummary>
+
+    <div class="row mb-3 ms-2">
+        <label for="street" class="col-sm-3 form-label">Street:</label>
+        <div class="col-sm-5">
+            <InputText id="street" class="form-control" @bind-Value="@AddressViewModel.Street" placeholder="Enter street"></InputText>
+            <ValidationMessage For="@(() => AddressViewModel.Street)" />
+        </div>
+    </div>
+
+    <div class="row mb-3 ms-2">
+        <label for="city" class="col-sm-3 form-label">City:</label>
+        <div class="col-sm-5">
+            <InputText id="city" class="form-control" @bind-Value="@AddressViewModel.City" placeholder="Enter city"></InputText>
+            <ValidationMessage For="@(() => AddressViewModel.City)" />
+        </div>
+    </div>
+
+    <div class="row mb-3 ms-2">
+        <label for="state" class="col-sm-3 form-label">State:</label>
+        <div class="col-sm-5">
+            <InputText id="state" class="form-control" @bind-Value="@AddressViewModel.State" placeholder="Enter state"></InputText>
+            <ValidationMessage For="@(() => AddressViewModel.State)" />
+        </div>
+    </div>
+
+    <div class="row mb-3 ms-2">
+        <label for="postalCode" class="col-sm-3 form-label">Postal Code:</label>
+        <div class="col-sm-5">
+            <InputText id="postalCode" class="form-control" @bind-Value="@AddressViewModel.PostalCode" placeholder="Enter postal code"></InputText>
+            <ValidationMessage For="@(() => AddressViewModel.PostalCode)" />
+        </div>
+    </div>
+
+    <div class="row mb-3 ms-2">
+        <label for="isDefault" class="col-sm-3 form-label">Is Default:</label>
+        <div class="col-sm-5">
+            <InputCheckbox id="isDefault" @bind-Value="@AddressViewModel.IsDefault"></InputCheckbox>
+            <ValidationMessage For="@(() => AddressViewModel.IsDefault)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Address</button>
+    <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    [Inject]
+    public IAddressDataService AddressDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public AddressViewModel AddressViewModel { get; set; } = new AddressViewModel();
+
+    public string Message { get; set; }
+
+}
+
+@functions{
+    private async Task HandleValidSubmit()
+    {
+        var result = await AddressDataService.CreateAddressAsync(AddressViewModel);
+        if (result.IsSuccess)
+        {
+            Message = "Address created successfully";
+            NavigationManager.NavigateTo("/addressoverview");
+        }
+        else
+        {
+            Message = result.Message;
+            if (!string.IsNullOrWhiteSpace(result.ValidationErrors))
+            {
+                Message += result.ValidationErrors;
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/addressoverview");
+    }
+}

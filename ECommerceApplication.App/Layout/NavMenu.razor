@@ -1,0 +1,74 @@
+﻿@using ECommerceApplication.App.Auth
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.Services
+@using ECommerceApplication.App.ViewModels
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+
+<div class="custom-nav-menu">
+    <nav class="custom-nav">
+        <ul class="custom-list">
+            <li class="custom-list-element"><NavLink href="productoverview">Products</NavLink></li>
+            <li class="custom-list-element"><NavLink href="categoryoverview">Categories</NavLink></li>
+            <li class="custom-list-element"><NavLink href="">Offers</NavLink></li>
+            <div style="text-align:right">
+                <li class="custom-list-element"><NavLink href="">ECommerce Help</NavLink></li>
+            </div>
+            <li class="custom-list-element"><div @onclick="OnLogout">Logout</div></li>
+            
+                <li class="custom-list-element"><NavLink href="addproduct">Add Products</NavLink></li>
+<!--<li><NavLink href="addcategory">Add Category</NavLink></li>
+<li><NavLink href="updatecategory">Update Category</NavLink></li>
+            <li><NavLink href="addproduct">Add Product</NavLink></li>
+            <li><NavLink href="updateproduct">Update Product</NavLink></li>
+            <li><NavLink href="orderitemoverview">OrderItems</NavLink></li>
+            <li><NavLink href="addorderitem">Add OrderItem</NavLink></li>
+            <li><NavLink href="updateorderitem">Update OrderItem</NavLink></li>
+            <li><NavLink href="useraddresses">User Addresses</NavLink></li>
+            <li><NavLink href="addaddress">Add Address</NavLink></li>
+            <li><NavLink href="shoppingcartoverview">Shopping Carts</NavLink></li>
+            <li><NavLink href="getbyidshoppingcart">GetById ShoppingCart</NavLink></li>
+            <li><div @onclick="OnLogout">LogOut</div></li> -->
+        </ul>
+    </nav>
+</div>
+
+@code {
+
+	[Inject]
+	public ITokenService TokenService { get; set; }
+
+	public UserViewModel User { get; set; }
+	private string email;
+
+	[Inject]
+	public IUserDataService UserDataService { get; set; }
+	
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadUserData();
+	}
+
+	public async void OnLogout()
+    {
+        await authStateProvider.Logout();
+        navigationManager.NavigateTo("/login");
+    }
+
+
+    private async Task LoadUserData()
+    {
+	    var token = await TokenService.GetTokenAsync();
+        if (token != null)
+        {
+	        email = await TokenService.DecodeEmailFromTokenAsync(token);
+
+	        if (!string.IsNullOrEmpty(email))
+	        {
+		        User = await UserDataService.GetUserByEmailAsync(email);
+	        }
+
+	        Console.WriteLine("User Role: " + User.Role);
+        }
+    }
+}

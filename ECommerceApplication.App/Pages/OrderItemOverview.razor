@@ -1,0 +1,53 @@
+﻿@page "/orderitemoverview"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>Order Item Overview</h3>
+
+<br />
+
+
+@if (OrderItems == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th class="col">Product Id</th>
+                <th class="col">Quantity</th>
+                <th class="col">Price per unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderItem in OrderItems)
+            {
+                <tr>
+                    <td>@orderItem.ProductId</td>
+                    <td>@orderItem.Quantity</td>
+                    <td>@orderItem.PricePerUnit</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public List<OrderItemViewModel> OrderItems { get; set; }
+}
+
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        OrderItems = (await OrderItemDataService.GetOrderItemsAsync()).ToList();
+    }
+
+}

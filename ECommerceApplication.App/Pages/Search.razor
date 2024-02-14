@@ -1,0 +1,198 @@
+﻿@page "/search"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="all-products">
+    <div class="filters-sidebar">
+    </div>
+    @if (!IsInitialized)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="search-content-container">
+            <div class="result-count-card">
+                @if (@SearchResults.Count == 0)
+                {
+                    <p class="result-count-text">No results for: <span class="results-query-text">"@Query"</span></p>
+                }
+                else if (@SearchResults.Count == 1)
+                {
+                    <p class="result-count-text">@SearchResults.Count result for: <span class="results-query-text">"@Query"</span></p>
+                }
+                else
+                {
+                    <p class="result-count-text">@SearchResults.Count results for: <span class="results-query-text">"@Query"</span></p>
+                }
+                <label class="sorting-label" for="sortDropdown">Sort by:</label>
+                <select class="sorting-select" id="sortDropdown" @onchange="SortProducts">
+                    <option class="sorting-option" value="name">Name</option>
+                    <option class="sorting-option" value="price-asc">Price (Low to High)</option>
+                    <option class="sorting-option" value="price-desc">Price (High to Low)</option>
+                </select>
+            </div>
+            <div class="product-container">
+                @foreach (var prod in SearchResults)
+                {
+                    <div class="product-card" @onclick="() => NavigateToProductDetail(prod.ProductId)">
+                        <div class="product-image-container">
+                            <img src="@prod.ImageUrl" alt="@prod.ProductName" class="product-image" />
+                        </div>
+                        <div class="product-details">
+                            <div class="product-name-container">
+                                <h4 class="product-name">@prod.ProductName</h4>
+                            </div>
+                            <div class="product-price-container">
+                                <p class="product-price">$@prod.Price</p>
+                            </div>
+                            <div class="product-button-container">
+                                <button class="add-to-cart-button" @onclick:preventDefault @onclick:stopPropagation @onclick="() => AddToCart(prod)" disabled="@prod.IsAddingToCart">
+                                    @if (prod.IsAddingToCart)
+                                    {
+                                        <span class="adding-to-cart-text">Adding...</span>
+                                    }
+                                    else
+                                    {
+                                        <svg class="shopping-cart-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1" />
+                                        </svg>
+                                        <span>Add to Cart</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+
+    [Inject]
+    public IPhotoDataService PhotoDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public List<ProductViewModel> SearchResults { get; set; }
+
+    private string selectedSortOption = "name";
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string? Query { get; set; }
+
+    private bool IsInitialized { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Query in OnInitializedAsync: {Query}");
+        await LoadSearchResults();
+        IsInitialized = true;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($"Query in OnParametersSetAsync: {Query}");
+        await LoadSearchResults();
+    }
+
+    private async Task LoadSearchResults()
+    {
+        if (string.IsNullOrEmpty(Query))
+        {
+            SearchResults = new List<ProductViewModel>();
+            return;
+        }
+
+        try
+        {
+            SearchResults = (await ProductDataService.GetProductAsync())
+                .Where(prod => prod.ProductName != null && prod.ProductName.Contains(Query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var product in SearchResults)
+            {
+	            var photoResponse = await PhotoDataService.GetPhotoForOwnerAsync(product.ProductId);
+
+	            if (photoResponse.IsSuccess)
+	            {
+		            Console.WriteLine("S-a dat fetch");
+		            product.ImageUrl = $"data:image/png;base64,{photoResponse.Data[0].ImageData}";
+	            }
+            }
+
+            switch (selectedSortOption)
+            {
+                case "name":
+                    SearchResults = SearchResults.OrderBy(p => p.ProductName).ToList();
+                    break;
+                case "price-asc":
+                    SearchResults = SearchResults.OrderBy(p => p.Price).ToList();
+                    break;
+                case "price-desc":
+                    SearchResults = SearchResults.OrderByDescending(p => p.Price).ToList();
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in search operation: {ex.Message}");
+            throw;
+        }
+    }
+
+
+    private async Task AddToCart(ProductViewModel product)
+    {
+        product.IsAddingToCart = true;
+
+        await Task.Delay(1000);
+
+        OrderItemViewModel orderItem = new OrderItemViewModel
+            {
+                ProductId = product.ProductId,
+                Quantity = 1,
+                PricePerUnit = product.Price
+            };
+
+        await AddOrderItemToCart(orderItem);
+
+        product.IsAddingToCart = false;
+    }
+
+    private async Task AddOrderItemToCart(OrderItemViewModel orderItem)
+    {
+        var response = await OrderItemDataService.CreateOrderItemAsync(orderItem);
+
+        if (response.IsSuccess)
+        {
+            Console.WriteLine("Product added to cart successfully!");
+        }
+        else
+        {
+            Console.WriteLine($"Failed to add product to cart.");
+        }
+    }
+
+    private void NavigateToProductDetail(Guid productId)
+    {
+        NavigationManager.NavigateTo($"/productdetail/{productId}");
+    }
+
+    private async Task SortProducts(ChangeEventArgs e)
+    {
+        selectedSortOption = e.Value.ToString();
+        await LoadSearchResults();
+    }
+
+}

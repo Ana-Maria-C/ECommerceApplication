@@ -1,0 +1,100 @@
+﻿@using Microsoft.JSInterop
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@using ECommerceApplication.App.Auth
+@inject CustomStateProvider authStateProvider
+@inject IJSRuntime JSRuntime
+
+
+<div class="navbar">
+    <div class="logo">
+        <NavLink href="/">
+            <img src="/logo.png" alt="Logo">
+        </NavLink>
+    </div>
+    <div class="search-bar">
+        <input type="text" placeholder="Search" @bind="searchQuery" @onkeyup="@(e => { if (e.Key == "Enter") PerformSearch(); })">
+        <button type="button" @onclick="PerformSearch">
+            <svg class="search-icon text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+            </svg>
+        </button>
+    </div>
+    <div class="profile-tab">
+        @if(User != null)
+        {
+            <button class="profile-button" @onclick="GoToAccount">
+                <img src="/ronaldo.jpg" alt="Profile Image" class="profile-image">
+                @User.Username
+            </button>
+        }
+        else
+        {
+            <button class="profile-button" @onclick="GoToAccount">
+                <img src="/no_profile_picture.png" alt="Profile Image" class="profile-image">
+                My Account
+            </button>
+        }
+    </div>
+    <div class="cart-tab">
+        <button class="cart-button" @onclick="GoToCart">
+            <svg class="cart-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1" />
+            </svg>
+            My Cart
+        </button>
+    </div>
+</div>
+
+
+@code {
+	private string searchQuery = "";
+
+	[Inject] private NavigationManager NavigationManager { get; set; }
+
+	[Inject] public IUserDataService UserDataService { get; set; }
+
+	[Inject] public ITokenService TokenService { get; set; }
+
+
+	public UserViewModel User { get; set; }
+	private string email;
+}
+
+@functions {
+protected override async Task OnInitializedAsync()
+    {
+	    var token = await TokenService.GetTokenAsync();
+        if (token != null)
+        {
+	        email = await TokenService.DecodeEmailFromTokenAsync(token);
+
+	        if (!string.IsNullOrEmpty(email))
+	        {
+		        User = await UserDataService.GetUserByEmailAsync(email);
+	        }
+        }
+    }
+
+
+    private void GoToAccount()
+    {
+        NavigationManager.NavigateTo($"/myaccount");
+    }
+
+    private void GoToCart()
+    {
+        NavigationManager.NavigateTo($"/cart");
+    }
+
+    private async void PerformSearch()
+    {
+        Console.WriteLine($"Performing search for: {searchQuery}");
+
+
+        NavigationManager.NavigateTo($"/search?query={Uri.EscapeDataString(searchQuery)}");
+
+        searchQuery = "";
+        StateHasChanged();
+    }
+}

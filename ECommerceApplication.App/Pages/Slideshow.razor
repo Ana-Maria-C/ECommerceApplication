@@ -1,0 +1,35 @@
+﻿@inherits ComponentBase
+
+<div class="home-offers">
+    <img class="home-pic" src="@currentImage" />
+</div>
+
+@code {
+    private string[] imageSources = { "/Home_1_slideshow.png", "/Home_2_slideshow.png", "/Home_3_slideshow.png", "/Home_4_slideshow.png" };
+    private int currentIndex = 0;
+    private string currentImage => imageSources[currentIndex];
+
+    private Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await StartSlideshow();
+    }
+
+    private async Task StartSlideshow()
+    {
+        timer = new Timer(async (state) => await ChangeImage(), null, 0, 5000);
+    }
+
+    private async Task ChangeImage()
+    {
+        currentIndex = (currentIndex + 1) % imageSources.Length;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Change(Timeout.Infinite, Timeout.Infinite);
+        timer?.Dispose();
+    }
+}

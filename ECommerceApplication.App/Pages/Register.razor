@@ -1,0 +1,128 @@
+﻿@page "/register"
+@using ECommerceApplication.App.Auth
+@using ECommerceApplication.App.ViewModels
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    body {
+        background-color: #D8BFD8; 
+    }
+
+    .login-container {
+        max-width: 400px;
+        margin: auto;
+        margin-top: 5%;
+        background-color: #ffffff;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-title {
+        text-align: center;
+        color: #800080; 
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .form-signin {
+        padding: 15px;
+    }
+
+    .btn-primary {
+        background-color: #9370DB; 
+        border-color: #9370DB; 
+    }
+
+        .btn-primary:hover {
+            background-color: #7B68EE; 
+            border-color: #7B68EE; 
+        }
+
+    .password-toggle {
+        position: relative;
+    }
+
+        .password-toggle span {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9370DB; 
+        }
+</style>
+<div class="login-container">
+    <h1 class="login-title">Register</h1>
+
+    <EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="registerRequest">
+        <DataAnnotationsValidator />
+
+        <label for="inputEmail" class="sr-only">Email</label>
+        <InputText id="inputEmail" class="form-control" @bind-Value="registerRequest.Email" autofocus placeholder="Email" />
+        <ValidationMessage For="@(() => registerRequest.Email)" />
+
+        <label for="inputUsername" class="sr-only">Username</label>
+        <InputText id="inputUsername" class="form-control" @bind-Value="registerRequest.Username" autofocus placeholder="Username" />
+        <ValidationMessage For="@(() => registerRequest.Username)" />
+            
+        <label for="inputRole" class="sr-only">Role</label>
+        <InputSelect id="inputRole" class="form-control" @bind-Value="registerRequest.Role" autofocus>
+	        <option value="" disabled selected>Select Role</option>
+	        <option value="User">User</option>
+	        <option value="Company">Company</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => registerRequest.Role)" />
+
+
+        <label for="inputPassword" class="sr-only">Password</label>
+        <div class="input-group password-toggle">
+            <InputText type="@((showPassword) ? "text" : "password")" id="inputPassword" class="form-control" placeholder="Password" @bind-Value="registerRequest.Password" />
+            <span @onclick="TogglePasswordVisibility">@((showPassword) ? "HIDE" : "SHOW")</span>
+        </div>
+        <ValidationMessage For="@(() => registerRequest.Password)" />
+
+        <br />
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+
+        <label class="text-danger">@error</label>
+
+        <NavLink href="login">
+            <button class="btn btn-lg btn-primary btn-block"><h6 class="font-weight-normal text-center">Log In</h6></button>
+        </NavLink>
+    </EditForm>
+</div>
+
+@code {
+    RegisterViewModel registerRequest { get; set; } = new RegisterViewModel();
+    string error { get; set; }
+    bool showPassword { get; set; } = false;
+
+    async Task OnSubmit()
+    {
+        error = null;
+        try
+        {
+            await authStateProvider.Register(registerRequest);
+            navigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message +
+                "\n"+
+                ex.StackTrace.ToString() + 
+                "\n" +
+                ex.Source;
+        }
+       
+    }
+    void TogglePasswordVisibility()
+        {
+            showPassword = !showPassword;
+        }
+}

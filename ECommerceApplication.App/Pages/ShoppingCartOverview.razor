@@ -1,0 +1,61 @@
+﻿@page "/shoppingcartoverview"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>ShoppingCart Overview</h3>
+<br />
+
+@if (ShoppingCarts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="shopping-cart-container">
+        @foreach (var cart in ShoppingCarts)
+        {
+            <div class="shopping-cart" @onclick="() => NavigateToCartDetail(cart.ShoppingCartId)">
+                <h4 class="cart-id">Cart ID: @cart.ShoppingCartId</h4>
+                <p class="user-id">User ID: @cart.UserId</p>
+                <button class="view-cart-button" @onclick="() => ViewCartDetails(cart)">
+                    View Cart Details
+                </button>
+                <button class="delete-cart-button" @onclick="() => DeleteCart(cart.ShoppingCartId)">
+                    Delete Cart
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Inject]
+
+    public IShoppingCartDataService ShoppingCartDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    
+    public List<ShoppingCartViewModel> ShoppingCarts { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+          ShoppingCarts = (await ShoppingCartDataService.GetShoppingCartsAsync()).ToList();
+    }
+
+    private void NavigateToCartDetail(Guid shoppingCartId)
+    {
+        NavigationManager.NavigateTo($"/cartdetail/{shoppingCartId}");
+    }
+
+    private void ViewCartDetails(ShoppingCartViewModel cart)
+    {
+        // Redirect or perform actions to view cart details
+    }
+
+    private async Task DeleteCart(Guid shoppingCartId)
+    {
+       // await ShoppingCartDataService.DeleteShoppingCartAsync(shoppingCartId);
+       // NavigationManager.NavigateTo("/shoppingCartoverview");
+    }
+}

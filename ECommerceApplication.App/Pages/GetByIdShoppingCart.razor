@@ -1,0 +1,77 @@
+﻿@page "/getbyidshoppingcart"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+
+<h3>GetByIdShoppingCart</h3>
+
+<div>
+    <input type="text" @bind="shoppingCartIdInput" placeholder="Enter ShoppingCartId (GUID)" />
+    <button @onclick="GetShoppingCartDetails">Trimite</button>
+</div>
+<br />
+@if (ShoppingCart == null)
+{
+    <p><em></em></p>
+}
+else
+{
+    <div class="shopping-cart-details">
+        <p class="user-id">User ID: @ShoppingCart.UserId</p>
+        <!-- Other details of the shopping cart -->
+        <h4>Order Items:</h4>
+        @if (ShoppingCart.OrderItems == null)
+        {
+            <p><em>No Order Items found</em></p>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Quantity</th>
+                        <th>Price per Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var orderItem in ShoppingCart.OrderItems)
+                    {
+                        <tr>
+                            <td>@orderItem.ProductId</td>
+                            <td>@orderItem.Quantity</td>
+                            <td>@orderItem.PricePerUnit</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+@code {
+    private string shoppingCartIdInput { get; set; }
+    private ShoppingCartViewModel ShoppingCart { get; set; }
+
+    [Inject]
+    public IShoppingCartDataService ShoppingCartDataService { get; set; }
+
+    private async Task GetShoppingCartDetails()
+    {
+        if (!Guid.TryParse(shoppingCartIdInput, out Guid parseGuid))
+        {
+            Console.WriteLine("Invalid GUID format");
+            return;
+        }
+
+        ShoppingCart = await ShoppingCartDataService.GetShoppingCartByIdAsync(parseGuid);
+        if (ShoppingCart == null)
+        {
+            Console.WriteLine("ShoppingCart not found");
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"ShoppingCart found: {ShoppingCart.ShoppingCartId}, {ShoppingCart.UserId}");
+        }
+    }
+}

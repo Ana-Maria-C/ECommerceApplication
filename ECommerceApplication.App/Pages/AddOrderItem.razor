@@ -1,0 +1,117 @@
+﻿@page "/addorderitem"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+<h3>New orderItem</h3>
+
+<EditForm Model="@OrderItemViewModel" OnValidSubmit="@HandleValidSubmit">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary></ValidationSummary>
+
+    <div class="row mb-3 ms-2">
+        <label for="productid" class="col-sm-3 form-label">Product id:</label>
+        <div class="col-sm-5">
+            <label for="productid" class="col-sm-3 form-label">Product:</label>
+            <InputSelect @bind-Value="@OrderItemViewModel.StringProductId" class="form-select" id="productid" placeholder="select a product">
+                <option value="">Select a product...</option>
+                @foreach (var product in Products)
+                {
+                    <option value="@product.ProductId">@product.ProductName</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => OrderItemViewModel.ProductId)" />
+        </div>
+    </div>
+
+
+
+
+    <div class="row mb-3 ms-2">
+        <label for="quantity" class="col-sm-3 form-label">Quantity:</label>
+        <div class="col-sm-5">
+            <InputNumber id="quantity" class="form-control" @bind-Value="@OrderItemViewModel.Quantity" placeholder="Enter quantity"></InputNumber>
+            <ValidationMessage For="@(() => OrderItemViewModel.Quantity)" />
+        </div>
+    </div>
+
+    <div class="row mb-3 ms-2">
+        <label for="priceperunit" class="col-sm-3 form-label">Price per unit:</label>
+        <div class="col-sm-5">
+            <InputNumber id="priceperunit" class="form-control" @bind-Value="@OrderItemViewModel.PricePerUnit" placeholder="Enter price per unit"></InputNumber>
+            <ValidationMessage For="@(() => OrderItemViewModel.PricePerUnit)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save orderItem</button>
+    <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public OrderItemViewModel OrderItemViewModel { get; set; } = new OrderItemViewModel();
+
+    public string Message { get; set; }
+
+    public List<ProductViewModel> Products { get; set; }
+
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+
+    private int selectedProductId;
+}
+
+@functions {
+
+    protected override async Task OnInitializedAsync()
+    {
+        Products = (await ProductDataService.GetProductAsync()).ToList();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            // Convert string to Guid for CategoryId
+            if (Guid.TryParse(OrderItemViewModel.StringProductId, out Guid productIdGuid))
+            {
+                OrderItemViewModel.ProductId = productIdGuid;
+
+                var result = await OrderItemDataService.CreateOrderItemAsync(OrderItemViewModel);
+
+                if (result.IsSuccess)
+                {
+                    Message = "OrderItem created successfully";
+                    NavigationManager.NavigateTo("/orderitemoverview");
+                }
+                else
+                {
+                    Message = result.Message;
+                    if (!string.IsNullOrWhiteSpace(result.ValidationErrors))
+                    {
+                        Message += result.ValidationErrors;
+                    }
+                }
+            }
+            else
+            {
+                throw new FormatException("Invalid Product ID format");
+            }
+        }
+        catch (FormatException ex)
+        {
+            // Mesaj de eroare pentru conversia incorectă a GUID-ului
+            Message = ex.Message;
+        }
+    }
+
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/orderitemoverview");
+    }
+}

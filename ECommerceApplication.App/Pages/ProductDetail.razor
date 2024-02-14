@@ -1,0 +1,574 @@
+﻿@page "/productdetail/{productId:guid}"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@using System.Text.Json
+@inject IReviewDataService ReviewDataService
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<div class="details-content-container">
+    @if (Product == null)
+    {
+        <p><em>Error 404</em></p>
+    }
+    else
+    {
+        <div class="product-detail">
+            <div class="category-and-title">
+                <p class="category-text">@Product.Category.CategoryName</p>
+                <h1>@Product.ProductName</h1>
+            </div>
+            <div class="product-info">
+                <div class="product-details-image-container">
+                    <img src="@Product.ImageUrl" alt="@Product.ProductName" class="product-image" />
+                </div>
+                <div class="middle-column">
+                    <div class="reviews-container">
+                        <div class="review-first-row">
+                            <div class="stars-container">
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 426.667 426.667" style="enable-background:new 0 0 426.667 426.667;" xml:space="preserve">
+        <polygon style="fill:#FAC917;" points="213.333,10.441 279.249,144.017 426.667,165.436 320,269.41 345.173,416.226 213.333,346.91
+	    81.485,416.226 106.667,269.41 0,165.436 147.409,144.017 "></polygon>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </svg>
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 426.667 426.667" style="enable-background:new 0 0 426.667 426.667;" xml:space="preserve">
+        <polygon style="fill:#FAC917;" points="213.333,10.441 279.249,144.017 426.667,165.436 320,269.41 345.173,416.226 213.333,346.91
+	    81.485,416.226 106.667,269.41 0,165.436 147.409,144.017 "></polygon>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </svg>
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 426.667 426.667" style="enable-background:new 0 0 426.667 426.667;" xml:space="preserve">
+        <polygon style="fill:#FAC917;" points="213.333,10.441 279.249,144.017 426.667,165.436 320,269.41 345.173,416.226 213.333,346.91
+	    81.485,416.226 106.667,269.41 0,165.436 147.409,144.017 "></polygon>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </svg>
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 426.667 426.667" style="enable-background:new 0 0 426.667 426.667;" xml:space="preserve">
+        <polygon style="fill:#FAC917;" points="213.333,10.441 279.249,144.017 426.667,165.436 320,269.41 345.173,416.226 213.333,346.91
+	    81.485,416.226 106.667,269.41 0,165.436 147.409,144.017 "></polygon>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </svg>
+                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 426.667 426.667" style="enable-background:new 0 0 426.667 426.667;" xml:space="preserve">
+        <polygon style="fill:#FAC917;" points="213.333,10.441 279.249,144.017 426.667,165.436 320,269.41 345.173,416.226 213.333,346.91
+	    81.485,416.226 106.667,269.41 0,165.436 147.409,144.017 "></polygon>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </svg>
+                            </div>
+                            <div class="review-score-container">
+                                <p class="review-score-text">5.00 (100 reviews)</p>
+                            </div>
+                        </div>
+                        <div class="review-percent-container">
+                            <p class="review-percent-text">100% Ecommerce customers recommend the product</p>
+                        </div>
+                    </div>
+                    <div class="shipping-details">
+                        <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="6.72in" height="6.72in" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 6.72 6.72" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <defs>
+                                                <style type="text/css">
+
+                                                    .fil1 {
+                                                        fill: white;
+                                                        fill-rule: nonzero
+                                                    }
+
+                                                    .fil0 {
+                                                        fill: url(#id0)
+                                                    }
+                            </style>
+                                                <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="1.38953" y1="-0.0529488" x2="5.33047" y2="6.77295">
+                                                <stop offset="0" style="stop-color:#444FF5"></stop>
+                                                <stop offset="0.490196" style="stop-color:#21BFDB"></stop>
+                                                <stop offset="1" style="stop-color:#1DABB6"></stop>
+                              </linearGradient>
+                             </defs>
+                                                <g id="Layer_x0020_1">
+                                                <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                                                <path class="fil0" d="M6.31603 1.65333c0.942567,1.63257 0.383209,3.72013 -1.24937,4.6627 -1.63257,0.942567 -3.72013,0.383209 -4.6627,-1.24937 -0.942567,-1.63257 -0.383209,-3.72013 1.24937,-4.6627 1.63257,-0.942567 3.72013,-0.383209 4.6627,1.24937z"></path>
+                                                <path class="fil1" d="M2.53662 1.29364c0.445461,0 0.848764,0.180567 1.1407,0.4725 0.291933,0.291933 0.4725,0.695232 0.4725,1.14069 0,0.0647441 -0.00391732,0.128957 -0.0114921,0.192398 -0.00757087,0.0634449 -0.019122,0.126689 -0.0343622,0.189437l-0.0733228 -0.0177402 0.0735512 0.0178622c-0.00897244,0.0369488 -0.0436575,0.0609134 -0.0804213,0.0575197l-0.000996063 7.87402e-006 -1.50742 0c-0.00800787,0 -0.0153504,0.00333858 -0.0207165,0.00870079 -0.0053622,0.00536614 -0.00870079,0.0127087 -0.00870079,0.0207205l0 1.06341c0,0.0417992 -0.0338898,0.075689 -0.075689,0.075689 -0.00335039,0 -0.00664567,-0.000216535 -0.00987795,-0.000641732 -0.414626,-0.0347598 -0.784673,-0.226248 -1.05063,-0.515039 -0.264677,-0.287406 -0.426319,-0.671043 -0.426319,-1.09232 0,-0.445461 0.180563,-0.84876 0.472496,-1.14069 0.291937,-0.291933 0.69524,-0.4725 1.1407,-0.4725zm1.03367 0.579528c-0.264528,-0.264528 -0.629992,-0.42815 -1.03367,-0.42815 -0.403677,0 -0.769138,0.163622 -1.03367,0.42815 -0.264531,0.264531 -0.428154,0.629992 -0.428154,1.03367 0,0.382024 0.146398,0.72972 0.386118,0.99002 0.224118,0.24337 0.529803,0.410449 0.873646,0.457929l0 -0.979043c0,-0.0497953 0.0203228,-0.0950157 0.0530512,-0.127752 0.0327323,-0.0327244 0.0779488,-0.0530472 0.127744,-0.0530472l1.45481 0c0.00733858,-0.036937 0.0133504,-0.0747677 0.0179685,-0.113449 0.00679921,-0.0569016 0.0103071,-0.115181 0.0103071,-0.174657 0,-0.403673 -0.163622,-0.769134 -0.428154,-1.03367z"></path>
+                                                <path class="fil1" d="M2.54892 1.29387c0.221575,0 0.41661,0.189252 0.552815,0.495224 0.128051,0.287642 0.207256,0.682988 0.207256,1.11783 0,0.0609055 -0.00174803,0.123413 -0.0051378,0.187173 -0.00334646,0.063122 -0.00831102,0.124689 -0.0147717,0.184504l-0.0750984 -0.00798031 0.0752559 0.00812598c-0.00422047,0.0390945 -0.0375079,0.068 -0.0760276,0.067563l-0.697854 0c-0.00800787,0 -0.0153504,0.00333858 -0.0207165,0.00870079 -0.0053622,0.00536614 -0.00870079,0.0127087 -0.00870079,0.0207205l0 1.03696c0,0.0418031 -0.0338898,0.075689 -0.075689,0.075689 -0.0133898,0 -0.0259685,-0.00348425 -0.036878,-0.00958268 -0.173807,-0.0830827 -0.323,-0.290866 -0.426429,-0.576248 -0.0988386,-0.27272 -0.158098,-0.619354 -0.158098,-0.995626 0,-0.434843 0.0792087,-0.830189 0.207256,-1.11783 0.136205,-0.305972 0.33124,-0.495224 0.552819,-0.495224zm0.415043 0.55672c-0.111484,-0.250441 -0.258646,-0.405343 -0.415043,-0.405343 -0.156402,0 -0.303559,0.154902 -0.415043,0.405343 -0.119646,0.268764 -0.193654,0.642118 -0.193654,1.05633 0,0.359224 0.0557126,0.68778 0.148638,0.944177 0.0666024,0.183783 0.150941,0.328673 0.245701,0.418126l0 -0.893496c0,-0.0497953 0.0203228,-0.0950157 0.0530512,-0.127752 0.0327323,-0.0327244 0.0779488,-0.0530472 0.127744,-0.0530472l0.630122 0c0.00311417,-0.0358937 0.00565354,-0.0720866 0.00758661,-0.108524 0.00299606,-0.0564528 0.00454724,-0.116303 0.00454724,-0.179484 0,-0.414217 -0.0740039,-0.787571 -0.19365,-1.05633z"></path>
+                                                <path class="fil1" d="M1.21843 2.11397c-0.0364094,-0.0204055 -0.0824803,-0.00743307 -0.10289,0.0289764 -0.0204094,0.0364094 -0.00743307,0.0824843 0.0289764,0.102894 0.00404724,0.00227165 1.39821,0.800307 2.78516,-0.000452756 0.0360866,-0.0209016 0.0483976,-0.0670984 0.0274961,-0.103185 -0.0209016,-0.0360866 -0.0670984,-0.0483976 -0.103185,-0.0274961 -1.31142,0.757146 -2.63172,0.00141339 -2.63556,-0.00073622z"></path>
+                                                <path class="fil1" d="M1.16536 3.60866c-0.0364094,0.020248 -0.0495157,0.066189 -0.0292677,0.102598 0.020248,0.0364094 0.066185,0.0495157 0.102594,0.0292677 0.00143701,-0.000795276 0.495012,-0.277638 1.18041,-0.319437 0.0416378,-0.00244882 0.0734055,-0.0381929 0.0709567,-0.0798307 -0.00244488,-0.0416378 -0.0381929,-0.0734055 -0.0798307,-0.0709567 -0.719787,0.0438937 -1.24333,0.337512 -1.24486,0.338358z"></path>
+                                                <path class="fil1" d="M0.999106 2.83114c-0.0417992,0 -0.075685,0.0338898 -0.075685,0.075689 0,0.0418031 0.0338858,0.075689 0.075685,0.075689l3.07502 0c0.0417992,0 0.075689,-0.0338858 0.075689,-0.075689 0,-0.0417992 -0.0338898,-0.075689 -0.075689,-0.075689l-3.07502 0z"></path>
+                                                <path class="fil1" d="M4.07305 3.35747l-1.53007 0c-0.0167283,0 -0.032,0.00690551 -0.0431142,0.0180157 -0.0111102,0.0111102 -0.0180118,0.0263819 -0.0180118,0.0431102l0 1.03573c0,0.0167283 0.00690157,0.032 0.0180118,0.0431102 0.0111142,0.0111142 0.0263858,0.0180157 0.0431142,0.0180157l0.116752 0c0.029689,-0.0401181 0.0674173,-0.0740709 0.110862,-0.0995276 0.0550866,-0.0322795 0.11885,-0.0507913 0.186508,-0.0507913 0.0676614,0 0.131425,0.0185118 0.186516,0.0507953 0.043437,0.0254528 0.0811693,0.0594094 0.110858,0.0995236l0.818579 0c0.0167283,0 0.032,-0.00690157 0.0431142,-0.0180157 0.0109331,-0.0109331 0.0177953,-0.0259055 0.0180079,-0.0423268l0 -0.70898 3.93701e-006 -0.00053937 0 -0.326992c0,-0.0167283 -0.00690157,-0.032 -0.0180118,-0.0431102 -0.0111142,-0.0111102 -0.0263858,-0.0180157 -0.0431142,-0.0180157zm0.271059 0.178728l0.29998 0c0.168563,0 0.321752,0.0689055 0.432756,0.179909 0.111004,0.111008 0.179909,0.264193 0.179909,0.432756l0 0.308024c0,0.057811 -0.0235945,0.110315 -0.0616063,0.148323 -0.0380079,0.0380118 -0.0905157,0.0616102 -0.148323,0.0616102l-0.0435512 0c-0.029622,0 -0.0552638,-0.0170197 -0.0676969,-0.0418071 -0.0190748,-0.0327559 -0.0462047,-0.0600354 -0.0785709,-0.079 -0.0320039,-0.0187559 -0.0696535,-0.0295118 -0.110232,-0.0295118 -0.0405748,0 -0.0782244,0.0107598 -0.110224,0.0295118 -0.033374,0.0195591 -0.061185,0.0479567 -0.0803346,0.0820748l-0.0659331 -0.0369567 0.0660039 0.0370433c-0.0140906,0.0251102 -0.0403661,0.0390709 -0.0672677,0.0386457l-0.144909 0c-0.0513583,0 -0.0985236,-0.0186181 -0.135059,-0.0494252 -0.0368858,0.0308189 -0.0843504,0.0494331 -0.136,0.0494331l-0.858197 0c-0.0269016,0.000417323 -0.0531772,-0.0135433 -0.0672638,-0.0386535l0.0660079 -0.0370354 -0.0659331 0.0369567c-0.0191457,-0.034122 -0.0469567,-0.0625197 -0.0803307,-0.0820787 -0.0320079,-0.018752 -0.0696575,-0.0295118 -0.110236,-0.0295118 -0.0405787,0 -0.0782283,0.0107559 -0.110232,0.0295079 -0.0323661,0.0189685 -0.0594961,0.046248 -0.0785669,0.0790039 -0.0124331,0.0247913 -0.0380748,0.041811 -0.0676969,0.041811l-0.157626 0c-0.0585197,0 -0.111669,-0.0238898 -0.150142,-0.0623622 -0.0384724,-0.0384764 -0.0623622,-0.091626 -0.0623622,-0.150142l0 -1.03573c0,-0.0585157 0.0238898,-0.111665 0.0623622,-0.150142 0.0384724,-0.0384724 0.091622,-0.0623622 0.150142,-0.0623622l1.53007 0c0.0585197,0 0.111669,0.0238898 0.150142,0.0623622 0.0384764,0.0384764 0.0623622,0.091626 0.0623622,0.150142l0 0.125937c0.0185984,-0.00542913 0.038248,-0.00833465 0.0585551,-0.00833465zm0.29998 0.151374l-0.29998 0c-0.0160236,0 -0.0306535,0.00661417 -0.0412992,0.0172638 -0.0104803,0.0104764 -0.0170512,0.0248189 -0.0172559,0.0405433l0 0.708945 -3.93701e-006 0.000547244 0 0.00201575c0,0.0160197 0.00661024,0.0306496 0.0172598,0.0412953 0.0106457,0.0106457 0.0252756,0.0172598 0.0412992,0.0172598l0.105303 0c0.0296929,-0.0401142 0.0674213,-0.0740709 0.110858,-0.0995236 0.0550827,-0.0322795 0.118846,-0.0507913 0.186504,-0.0507913 0.0676575,0 0.131425,0.0185118 0.186512,0.0507913 0.0434331,0.0254528 0.0811614,0.0594055 0.110854,0.0995236l0.00268504 0c0.0160197,0 0.0306457,-0.00661417 0.0412913,-0.0172598 0.0106496,-0.0106457 0.0172638,-0.0252756 0.0172638,-0.0412953l0 -0.308024c0,-0.126772 -0.0519213,-0.242083 -0.135563,-0.325728 -0.0836417,-0.0836417 -0.198957,-0.135563 -0.325728,-0.135563z"></path>
+                                                <path class="fil1" d="M4.57221 3.81983l0.125539 0c0.073189,0 0.139669,0.0298898 0.187815,0.0780315 0.0481417,0.0481457 0.0780315,0.11463 0.0780315,0.187815l0 0.125535c0,0.0418031 -0.0338898,0.075689 -0.075689,0.075689l-0.315697 0c-0.0417992,0 -0.075685,-0.0338858 -0.075685,-0.075689l0 -0.315693c0,-0.0417992 0.0338858,-0.075689 0.075685,-0.075689zm0.125539 0.151378l-0.0498504 0 0 0.164319 0.164319 0 0 -0.0498504c0,-0.0313976 -0.0129016,-0.0600039 -0.033685,-0.0807835 -0.0207795,-0.0207835 -0.0493819,-0.033685 -0.0807835,-0.033685z"></path>
+                                                <path class="fil1" d="M4.74678 4.36513c0.102055,0 0.194465,0.041378 0.261362,0.108264 0.0668858,0.0668858 0.108264,0.159295 0.108264,0.261358 0,0.102059 -0.041378,0.194472 -0.108264,0.261358 -0.0668976,0.0668898 -0.159307,0.108268 -0.261362,0.108268 -0.102059,0 -0.194472,-0.0413701 -0.261362,-0.108268 -0.0668858,-0.0668858 -0.108264,-0.159295 -0.108264,-0.261358 0,-0.102063 0.041378,-0.194472 0.108264,-0.261358 0.0668898,-0.0668937 0.159303,-0.108264 0.261362,-0.108264zm0.154331 0.215295c-0.0394921,-0.0394882 -0.0940591,-0.0639213 -0.154331,-0.0639213 -0.0602756,0 -0.114846,0.0244291 -0.154331,0.0639213 -0.0394882,0.0394843 -0.0639173,0.0940551 -0.0639173,0.154327 0,0.0602756 0.0244291,0.114843 0.0639173,0.154331 0.0394843,0.0394921 0.0940551,0.0639173 0.154331,0.0639173 0.0602717,0 0.114839,-0.0244291 0.154331,-0.0639173 0.0394882,-0.0394882 0.0639173,-0.0940591 0.0639173,-0.154331 0,-0.0602717 -0.0244291,-0.114843 -0.0639173,-0.154327z"></path>
+                                                <path class="fil1" d="M2.95709 4.36513c0.102063,0 0.194472,0.0413701 0.261362,0.108264 0.0668858,0.0668858 0.108264,0.159295 0.108264,0.261358 0,0.102063 -0.041378,0.194472 -0.108264,0.261358 -0.0668898,0.0668976 -0.159299,0.108268 -0.261362,0.108268 -0.102059,0 -0.194469,-0.041378 -0.261358,-0.108268 -0.0668898,-0.0668858 -0.108264,-0.159299 -0.108264,-0.261358 0,-0.102063 0.0413701,-0.194472 0.108264,-0.261358 0.0668898,-0.0668858 0.159299,-0.108264 0.261358,-0.108264zm0.154331 0.215295c-0.0394843,-0.0394921 -0.0940551,-0.0639213 -0.154331,-0.0639213 -0.0602717,0 -0.114839,0.0244331 -0.154327,0.0639213 -0.0394921,0.0394843 -0.0639173,0.0940551 -0.0639173,0.154327 0,0.0602717 0.0244252,0.114843 0.0639173,0.154331 0.0394882,0.0394882 0.0940551,0.0639173 0.154327,0.0639173 0.0602756,0 0.114846,-0.0244252 0.154331,-0.0639173 0.0394882,-0.0394882 0.0639173,-0.0940551 0.0639173,-0.154331 0,-0.0602717 -0.0244291,-0.114843 -0.0639173,-0.154327z"></path>
+                             </g>
+                        </svg>
+                        <p id="shipping-text">Delivery in: Iasi</p>
+                    </div>
+                    <div id="benefits-container">
+                        <div id="benefits-img-and-text">
+                            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M43 9H21L32 23L43 9Z" fill="#48CAE4"></path>
+                                <path d="M43 9H21L25 3H39L43 9Z" fill="#ADE8F4"></path>
+                                <path d="M36 9H28L32 23L36 9Z" fill="#00B4D8"></path>
+                                <path d="M36 9H28L30 3H34L36 9Z" fill="#48CAE4"></path>
+                                <path d="M21 9L32 23L28 9H21Z" fill="#0096C7"></path>
+                                <path d="M30 3H25L21 9H28L30 3Z" fill="#00B4D8"></path>
+                                <path d="M46 7.00001C45.7853 7.00027 45.5762 6.93141 45.4036 6.80362C45.2311 6.67583 45.1042 6.49589 45.0419 6.29042C44.9795 6.08495 44.985 5.86487 45.0574 5.66273C45.1298 5.46059 45.2654 5.28713 45.444 5.16801L48.444 3.16801C48.6647 3.02081 48.9348 2.9673 49.1949 3.01925C49.455 3.0712 49.6838 3.22435 49.831 3.44501C49.9782 3.66567 50.0317 3.93576 49.9798 4.19587C49.9278 4.45599 49.7747 4.68481 49.554 4.83201L46.554 6.83201C46.3899 6.9414 46.1972 6.99985 46 7.00001V7.00001Z" fill="#ADE8F4"></path>
+                                <path d="M51 10H47C46.7348 10 46.4804 9.89464 46.2929 9.70711C46.1054 9.51957 46 9.26522 46 9C46 8.73478 46.1054 8.48043 46.2929 8.29289C46.4804 8.10536 46.7348 8 47 8H51C51.2652 8 51.5196 8.10536 51.7071 8.29289C51.8946 8.48043 52 8.73478 52 9C52 9.26522 51.8946 9.51957 51.7071 9.70711C51.5196 9.89464 51.2652 10 51 10Z" fill="#ADE8F4"></path>
+                                <path d="M49 15C48.8028 14.9999 48.61 14.9414 48.446 14.832L45.446 12.832C45.2253 12.6848 45.0722 12.456 45.0202 12.1959C44.9683 11.9358 45.0218 11.6657 45.169 11.445C45.3162 11.2243 45.545 11.0712 45.8051 11.0192C46.0652 10.9673 46.3353 11.0208 46.556 11.168L49.556 13.168C49.7346 13.2871 49.8702 13.4606 49.9426 13.6627C50.015 13.8649 50.0205 14.085 49.9581 14.2904C49.8957 14.4959 49.7689 14.6758 49.5964 14.8036C49.4238 14.9314 49.2147 15.0003 49 15V15Z" fill="#ADE8F4"></path>
+                                <path d="M18 7.00001C17.8028 6.99985 17.61 6.9414 17.446 6.83201L14.446 4.83201C14.2253 4.68481 14.0722 4.45599 14.0202 4.19587C13.9945 4.06708 13.9944 3.93448 14.0199 3.80565C14.0454 3.67681 14.0961 3.55427 14.169 3.44501C14.2419 3.33575 14.3356 3.24191 14.4447 3.16886C14.5538 3.09581 14.6763 3.04497 14.8051 3.01925C15.0652 2.9673 15.3353 3.02081 15.556 3.16801L18.556 5.16801C18.7346 5.28713 18.8702 5.46059 18.9426 5.66273C19.015 5.86487 19.0205 6.08495 18.9581 6.29042C18.8957 6.49589 18.7689 6.67583 18.5964 6.80362C18.4238 6.93141 18.2147 7.00027 18 7.00001V7.00001Z" fill="#ADE8F4"></path>
+                                <path d="M17 10H13C12.7348 10 12.4804 9.89464 12.2929 9.70711C12.1054 9.51957 12 9.26522 12 9C12 8.73478 12.1054 8.48043 12.2929 8.29289C12.4804 8.10536 12.7348 8 13 8H17C17.2652 8 17.5196 8.10536 17.7071 8.29289C17.8946 8.48043 18 8.73478 18 9C18 9.26522 17.8946 9.51957 17.7071 9.70711C17.5196 9.89464 17.2652 10 17 10Z" fill="#ADE8F4"></path>
+                                <path d="M15 15C14.7853 15.0003 14.5762 14.9314 14.4036 14.8036C14.2311 14.6758 14.1042 14.4959 14.0419 14.2904C13.9795 14.0849 13.985 13.8649 14.0574 13.6627C14.1298 13.4606 14.2654 13.2871 14.444 13.168L17.444 11.168C17.5533 11.0951 17.6758 11.0445 17.8046 11.0189C17.9335 10.9934 18.0661 10.9935 18.1949 11.0192C18.3237 11.045 18.4461 11.0958 18.5553 11.1689C18.6644 11.2419 18.7581 11.3357 18.831 11.445C18.9039 11.5543 18.9545 11.6768 18.9801 11.8056C19.0056 11.9345 19.0055 12.0671 18.9798 12.1959C18.954 12.3247 18.9032 12.4471 18.8301 12.5563C18.7571 12.6654 18.6633 12.7591 18.554 12.832L15.554 14.832C15.3899 14.9414 15.1972 14.9998 15 15V15Z" fill="#ADE8F4"></path>
+                                <path d="M60.28 38.02L53.69 50.25C52.1589 53.0811 51.521 56.3094 51.86 59.51L52.02 61H39.14L38.54 57.32C37.8563 53.1007 38.5839 48.7737 40.61 45.01C41.1442 44.0162 41.7667 43.0724 42.47 42.19L47.62 35.67C47.8727 35.3514 48.1875 35.0876 48.5453 34.8944C48.903 34.7012 49.2964 34.5828 49.7014 34.5463C50.1063 34.5098 50.5145 34.5561 50.901 34.6822C51.2876 34.8083 51.6445 35.0117 51.95 35.28C51.99 35.31 52.01 35.35 52.05 35.38L53.73 32.81C53.8839 32.5787 53.9874 32.3176 54.0339 32.0437C54.0805 31.7698 54.0689 31.4892 54 31.22L52.03 23.43C51.93 23.0349 51.9115 22.6235 51.9757 22.221C52.04 21.8185 52.1855 21.4333 52.4036 21.0889C52.6216 20.7446 52.9076 20.4482 53.2439 20.218C53.5803 19.9878 53.96 19.8286 54.36 19.75C55.139 19.6256 55.9362 19.8009 56.5912 20.2406C57.2462 20.6804 57.7102 21.3519 57.89 22.12L60.82 33.7C61.1816 35.1572 60.9892 36.6967 60.28 38.02V38.02Z" fill="#F9DBAF"></path>
+                                <path d="M25.71 54.2C25.7113 55.2451 25.6277 56.2885 25.46 57.32L24.86 61H11.98L12.14 59.51C12.479 56.3094 11.841 53.0811 10.31 50.25L3.71998 38.02C3.0108 36.6967 2.81836 35.1572 3.17998 33.7L6.10998 22.12C6.28975 21.3519 6.75382 20.6804 7.40878 20.2406C8.06374 19.8009 8.86097 19.6256 9.63998 19.75C10.0399 19.8286 10.4197 19.9878 10.7561 20.218C11.0924 20.4482 11.3784 20.7446 11.5964 21.0889C11.8144 21.4333 11.96 21.8185 12.0242 22.221C12.0885 22.6235 12.07 23.0349 11.97 23.43L9.99998 31.22C9.93109 31.4892 9.91953 31.7698 9.96604 32.0437C10.0126 32.3176 10.1161 32.5787 10.27 32.81L11.95 35.38C11.99 35.35 12.01 35.31 12.05 35.28C12.3555 35.0117 12.7124 34.8083 13.0989 34.6822C13.4855 34.5561 13.8937 34.5098 14.2986 34.5463C14.7036 34.5828 15.0969 34.7012 15.4547 34.8944C15.8125 35.0876 16.1273 35.3514 16.38 35.67L21.53 42.19C22.2332 43.0724 22.8557 44.0162 23.39 45.01C24.9121 47.8341 25.7093 50.9919 25.71 54.2V54.2Z" fill="#F9DBAF"></path>
+                                <path d="M12.75 43.279L9.79999 39.55C9.30485 38.9523 9.04845 38.1925 9.08021 37.417C9.11197 36.6415 9.42963 35.9052 9.97199 35.35C10.3816 34.9685 10.8909 34.7108 11.441 34.607L11.952 35.385C11.421 35.9348 11.1102 36.6603 11.0787 37.424C11.0472 38.1877 11.2971 38.9364 11.781 39.528L15.989 44.849C15.3657 44.8484 14.7505 44.7069 14.1896 44.435C13.6287 44.1632 13.1366 43.768 12.75 43.279V43.279Z" fill="#EDB88E"></path>
+                                <path d="M12.14 59.51C12.479 56.3094 11.841 53.0811 10.31 50.25L3.71998 38.02C3.0108 36.6967 2.81836 35.1572 3.17998 33.7L4.31998 29.21C3.94976 33.5158 5.17394 37.8075 7.75998 41.27L13.37 48.77C15.3006 51.3419 16.409 54.4372 16.55 57.65V57.66C16.5928 58.8491 16.9593 60.0039 17.61 61H11.98L12.14 59.51Z" fill="#EDB88E"></path>
+                                <path d="M51.25 43.279L54.2 39.55C54.6954 38.9525 54.9522 38.1927 54.9206 37.4172C54.889 36.6416 54.5714 35.9052 54.029 35.35C53.6194 34.9685 53.11 34.7108 52.56 34.607L52.049 35.385C52.5798 35.9349 52.8904 36.6604 52.9219 37.424C52.9535 38.1876 52.7037 38.9363 52.22 39.528L48.012 44.849C48.6351 44.8483 49.25 44.7067 49.8108 44.4348C50.3715 44.1629 50.8635 43.7678 51.25 43.279V43.279Z" fill="#EDB88E"></path>
+                                <path d="M47.45 60.25C47.768 60.5198 48.102 60.7702 48.45 61H39.14L38.54 57.32C37.8563 53.1007 38.5839 48.7737 40.61 45.01C41.1442 44.0162 41.7667 43.0724 42.47 42.19L47.62 35.67C47.9395 35.2665 48.3578 34.9524 48.8343 34.7579C49.3108 34.5635 49.8294 34.4953 50.34 34.56L47.47 38.19C46.7667 39.0724 46.1442 40.0162 45.61 41.01C43.5839 44.7737 42.8563 49.1007 43.54 53.32C43.9814 56.0202 45.367 58.476 47.45 60.25V60.25Z" fill="#EDB88E"></path>
+                                <path d="M22 21C21.8499 21.0001 21.7018 21.0339 21.5666 21.099C21.4314 21.1641 21.3126 21.2587 21.219 21.376L17.219 26.376C17.133 26.4781 17.0683 26.5964 17.0288 26.7239C16.9892 26.8514 16.9756 26.9855 16.9887 27.1184C17.0018 27.2512 17.0414 27.3801 17.1051 27.4974C17.1688 27.6147 17.2554 27.7181 17.3597 27.8014C17.464 27.8847 17.5839 27.9463 17.7124 27.9825C17.8408 28.0188 17.9753 28.0289 18.1077 28.0124C18.2402 27.9959 18.368 27.953 18.4836 27.8863C18.5992 27.8196 18.7003 27.7304 18.781 27.624L22.48 23H32V21H22Z" fill="#EFAD1B"></path>
+                                <path d="M46.781 26.376L42.781 21.376C42.6874 21.2587 42.5686 21.1641 42.4334 21.099C42.2982 21.0339 42.15 21.0001 42 21H32V23H41.519L45.219 27.624C45.2996 27.7304 45.4007 27.8196 45.5163 27.8863C45.632 27.953 45.7598 27.9959 45.8922 28.0124C46.0247 28.0289 46.1591 28.0188 46.2876 27.9825C46.4161 27.9463 46.536 27.8847 46.6403 27.8014C46.7446 27.7181 46.8311 27.6147 46.8948 27.4974C46.9585 27.3801 46.9981 27.2512 47.0112 27.1184C47.0243 26.9855 47.0107 26.8514 46.9712 26.7239C46.9316 26.5964 46.867 26.4781 46.781 26.376V26.376Z" fill="#FDC741"></path>
+                                <path d="M42 21H22V39H42V21Z" fill="#FDC741"></path>
+                                <path d="M42 36V39H22V21H26V28C26 30.1217 26.8429 32.1566 28.3431 33.6569C29.8434 35.1571 31.8783 36 34 36H42Z" fill="#EFAD1B"></path>
+                                <path d="M42 21H22L26 29H38L42 21Z" fill="#EFAD1B"></path>
+                                <path d="M34 34H30V39H34V34Z" fill="#FCEA42"></path>
+                                <path d="M42 21H22L26 27H38L42 21Z" fill="#FCEA42"></path>
+                                <path d="M34 36V39H30V34.92C31.2126 35.6317 32.594 36.0047 34 36Z" fill="#FDC741"></path>
+                            </svg>
+                            <p id="benefits-text">Benefits:</p>
+                        </div>
+                        <div id="benefits-for-product">
+                            <ul id="benefits-list">
+                                <li>&#10003; Delivery in maximum 2-3 working days</li>
+                                <li>&#10003; Free return within 30 days</li>
+                                <li>&#10003; Warranty included</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="price-and-button">
+                    <div class="price-button-card-container">
+                        <p class="product-price-details">$@Product.Price</p>
+                        <p class="sold-shipped-text">Sold and Shipped by: ECommerce</p>
+                        <p class="in-stock-text">In stock</p>
+                        <div class="quantity-container">
+                            <label for="quantity" class="quantity-label">Quantity:</label>
+                            <div class="quantity-field">
+                                <InputNumber id="quantity" class="form-control" @bind-Value="@OrderItemViewModel.Quantity" placeholder="Enter quantity"></InputNumber>
+                            </div>
+                        </div>
+                        <button class="add-to-cart-button-details" @onclick="() => AddToCartHandler()">
+                            @if (Product.IsAddingToCart)
+                            {
+                                <span class="adding-to-cart-text">Adding...</span>
+                            }
+                            else
+                            {
+                                <span class="shopping-cart-icon-details">&#128722;</span>
+                                <span>Add to Cart</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="product-description">
+            <h2 id="description-text">Description</h2>
+            <p>@Product.Description</p>
+        </div>
+        <ProductDetailsSuggestions ProductId="@productId" />
+        <div class="review-section">
+            <h2>Customer Reviews</h2>
+            @if (!reviewSubmitted)
+            {
+                <p>Please rate the product:</p>
+                <div>
+                    <span class="star @(userRating >= 1 ? "selected" : "")" @onclick="() => RateProduct(1)">★</span>
+                    <span class="star @(userRating >= 2 ? "selected" : "")" @onclick="() => RateProduct(2)">★</span>
+                    <span class="star @(userRating >= 3 ? "selected" : "")" @onclick="() => RateProduct(3)">★</span>
+                    <span class="star @(userRating >= 4 ? "selected" : "")" @onclick="() => RateProduct(4)">★</span>
+                    <span class="star @(userRating >= 5 ? "selected" : "")" @onclick="() => RateProduct(5)">★</span>
+                </div>
+                <p>Your Rating: @userRating stars</p>
+                <textarea @bind="userReview" placeholder="Write your review here"></textarea>
+                <button class="submit-review-button" @onclick="SubmitReview">Submit Review</button>
+            }
+            else
+            {
+                <p class="description-label">Thank you for your review!</p>
+            }
+            <br />
+            <div>
+                <h3>Reviews</h3>
+                @if (ProductReviews != null && ProductReviews.Any())
+                {
+                    @foreach (var review in ProductReviews)
+                    {
+                        <div class="review">
+
+                            <div class="rating">
+                                Rating:
+                                @{
+                                    for (int i = 1; i <= review.Rating; i++)
+                                    {
+                                        <span class="star" style="color: #ffd700;">★</span>
+                                    }
+
+                                    for (int i = review.Rating + 1; i <= 5; i++)
+                                    {
+                                        <span class="star">★</span>
+                                    }
+                                }
+                            </div>
+                            <p class="review-text"><span class="description-label">Description:</span> @review.ReviewText</p>
+                            @if (review.UserId == currentUserId)
+                            {
+                                <button class="delete-review-button" @onclick="() => DeleteReview(review.ReviewId)">Delete</button>
+                            }
+                            <!-- Adaugă orice alte detalii ale recenziei pe care dorești să le afișezi -->
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="review-text">No reviews for this product yet.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
+@code {
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public ITokenService TokenService { get; set; }
+    [Inject]
+    public IShoppingCartDataService ShoppingCartDataService { get; set; }
+    [Inject]
+    public IOrderItemDataService OrderItemDataService { get; set; }
+    [Inject]
+    public IProductDataService ProductDataService { get; set; }
+
+    [Inject] public IPhotoDataService PhotoDataService { get; set; }
+
+    public List<ReviewViewModel> ProductReviews { get; set; }
+    private bool reviewSubmitted = false;
+
+    [Parameter]
+    public Guid productId { get; set; }
+
+    public string AddToCartMessage { get; set; }
+
+    private OrderItemViewModel OrderItemViewModel { get; set; } = new OrderItemViewModel();
+
+    private ProductViewModel Product { get; set; }
+    private int userRating = 0;
+    private string userReview = "";
+    private Guid currentUserId;
+}
+
+@functions {
+
+    private void RateProduct(int rating)
+    {
+        userRating = rating;
+    }
+
+    private async void SubmitReview()
+    {
+        if (userRating == 0)
+        {
+            // Afiseaza un mesaj de eroare sau ia alte masuri daca nu este setata nicio evaluare.
+            return;
+        }
+
+        // Creează un obiect ReviewViewModel pentru a fi trimis la serviciu pentru crearea review-ului.
+        var newReview = new ReviewViewModel
+            {
+                ProductId = productId,
+                ReviewText = userReview,
+                Rating = userRating,
+                // Obține UserId utilizând serviciul TokenService.
+                UserId = currentUserId
+            };
+
+        // Trimite noul review către serviciul ReviewDataService pentru a-l crea.
+        var createReviewResult = await ReviewDataService.CreateReviewAsync(newReview);
+
+        if (createReviewResult.IsSuccess)
+        {
+            // Dacă crearea review-ului este reușită, reîmprospătează lista de recenzii pentru produs.
+            ProductReviews = await ReviewDataService.GetReviewByProductId(productId);
+
+            // Resetează valorile pentru următoarea recenzie.
+            userRating = 0;
+            userReview = "";
+            reviewSubmitted = true;
+        }
+        else
+        {
+            // Afiseaza un mesaj de eroare sau ia alte masuri daca crearea review-ului a esuat.
+            Console.WriteLine($"Error creating review: {createReviewResult.Message}");
+        }
+    }
+
+    private async void DeleteReview(Guid reviewId)
+    {
+        var deleteReviewResult = await ReviewDataService.DeleteReviewAsync(reviewId);
+
+        if (deleteReviewResult.IsSuccess)
+        {
+            // Reîmprospătează lista de recenzii pentru produs.
+            ProductReviews = await ReviewDataService.GetReviewByProductId(productId);
+
+            // Declanșează reîmprospătarea componentei.
+            //StateHasChanged();
+        }
+        else
+        {
+            // Tratează eroarea de ștergere a recenziei, de exemplu, afișează un mesaj de eroare.
+            Console.WriteLine($"Error deleting review: {deleteReviewResult.Message}");
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        AddToCartMessage = "";
+        currentUserId = await TokenService.DecodeUserIdFromTokenAsync(await TokenService.GetTokenAsync());
+
+        if (productId == Guid.Empty)
+        {
+            Console.WriteLine("ProductId not provided or invalid");
+            return;
+        }
+
+        OrderItemViewModel.Quantity = 1;
+
+
+        Console.WriteLine($"Attempting to retrieve product with ID: {productId}");
+
+        try
+        {
+            Product = await ProductDataService.GetProductByIdAsync(productId);
+
+            var photoResponse = await PhotoDataService.GetPhotoForOwnerAsync(productId);
+
+            if (photoResponse.IsSuccess)
+            {
+	            Console.WriteLine("S-a dat fetch");
+	            Product.ImageUrl = $"data:image/png;base64,{photoResponse.Data[0].ImageData}";
+            }
+
+            if (Product == null)
+            {
+                Console.WriteLine("Product not found or API response is null");
+                // Handle the null response more gracefully, e.g., redirect the user or show an error message.
+            }
+            else
+            {
+                Console.WriteLine($"Product found: {@Product.ProductName}, {Product.Description}, {Product.ImageUrl}, {Product.Price}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving product: {ex.Message}");
+        }
+        Console.WriteLine($"Attempting to retrieve reviews for product with ID: {productId}");
+
+        ProductReviews = await ReviewDataService.GetReviewByProductId(productId);
+        Console.WriteLine($"Found {ProductReviews.Count} reviews for product with ID: {productId}");
+        Console.WriteLine($"Reviews:{ProductReviews}");
+    }
+
+    private async void AddToCartHandler()
+    {
+        await AddToCart();
+        StateHasChanged();
+    }
+
+    private async Task<bool>AddToCart()
+    {
+        Product.IsAddingToCart = true;
+        try
+        {
+            if (OrderItemViewModel.Quantity == null || OrderItemViewModel.Quantity <= 0)
+            {
+                AddToCartMessage = "Select a valid quantity";
+                return false;
+            }
+            OrderItemViewModel.ProductId = Product.ProductId;
+
+
+            var token = await TokenService.GetTokenAsync();
+            Guid userId = await TokenService.DecodeUserIdFromTokenAsync(token);
+            if (userId == null || userId == Guid.Empty)
+            {
+                AddToCartMessage = "Error adding to cart";
+                return false;
+            }
+            var shoppingCart = await ShoppingCartDataService.GetShoppingCartByUserIdAsync(userId);
+            OrderItemViewModel.PricePerUnit = Product.Price;
+            var result = await OrderItemDataService.CreateOrderItemAsync(OrderItemViewModel);
+            if (!result.IsSuccess)
+            {
+                AddToCartMessage = "Error adding to cart";
+                return false;    
+            }
+            OrderItemDto orderItem = result.Data;
+            var shoppingCartViewModel = await ShoppingCartDataService.AttachOrderItemById(shoppingCart.ShoppingCartId, orderItem);
+            AddToCartMessage = "Added to cart";
+        }
+        catch (Exception e)
+        {
+            AddToCartMessage = "Error adding to cart";
+            Console.WriteLine(e);
+        }
+        Product.IsAddingToCart = false;
+        return true;
+    }
+
+}
+

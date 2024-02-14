@@ -1,0 +1,334 @@
+﻿@page "/useraddresses"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.Services
+@using ECommerceApplication.App.ViewModels
+@inject IJSRuntime JSRuntime
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+
+<h3>My Addresses</h3>
+
+<br />
+
+
+
+@if (Addresses == null)
+{
+    <p><em>You have no addresses yet.</em></p>
+      <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body text-center align-middle">
+                        <h5 class="card-title">Add New Address</h5>
+                        <p class="card-text">Click to add a new address</p>
+                        <button class="btn btn-success" @onclick="() => ShowAddAddressModal = true">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+}
+else
+{
+    <style>
+        .card {
+            height: 100%;
+        }
+    </style>
+    <div class="row">
+        @foreach (var address in Addresses)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Address</h5>
+                        <p class="card-text">
+                            <strong>Street:</strong> @address.Street <br />
+                            <strong>City:</strong> @address.City <br />
+                            <strong>State:</strong> @address.State <br />
+                            <strong>Postal Code:</strong> @address.PostalCode <br />
+                            <strong>Is Default:</strong> @(address.IsDefault ? "Yes" : "No")
+                        </p>
+                        <button class="btn btn-primary" @onclick="() => EditAddress(address)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteAddress(address.AddressId)">Delete</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body text-center align-middle">
+                        <h5 class="card-title">Add New Address</h5>
+                        <p class="card-text">Click to add a new address</p>
+                        <button class="btn btn-success" @onclick="() => ShowAddAddressModal = true">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@if (ShowEditAddressModal)
+{
+    <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                    <button type="button" class="close" @onclick="() => ShowEditAddressModal = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formul pentru editarea adresei -->
+                    <form>
+                        <!-- Adaugă aici câmpurile necesare pentru editarea adresei -->
+                        <div class="form-group">
+                            <label for="street">Street</label>
+                            <input type="text" class="form-control" id="street" @bind="EditingAddress.Street" />
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="city" @bind="EditingAddress.City" />
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" class="form-control" id="state" @bind="EditingAddress.State" />
+                        </div>
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" class="form-control" id="postalCode" @bind="EditingAddress.PostalCode" />
+                        </div>
+                        <div class="form-group">
+                            <label for="isDefault">Is Default</label>
+                            <input type="checkbox" class="form-check-input" id="isDefault" @bind="EditingAddress.IsDefault" />
+                            <label class="form-check-label" for="isDefault">Default</label>
+                        </div>
+                        <!-- Adaugă aici celelalte câmpuri ale adresei -->
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => ShowEditAddressModal = false">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveEditedAddress">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activează modalul -->
+    <script>
+        $(document).ready(function () {
+            $('#editAddressModal').modal('show');
+        });
+    </script>
+}
+
+
+@if (ShowAddAddressModal)
+{
+    Console.WriteLine("Am intrat");
+    <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                    <button type="button" class="close" @onclick="() => ShowAddAddressModal = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="newStreet">Street</label>
+                            <input type="text" class="form-control" id="newStreet" @bind="NewAddress.Street" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newcity">City</label>
+                            <input type="text" class="form-control" id="newcity" @bind="NewAddress.City" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newstate">State</label>
+                            <input type="text" class="form-control" id="newstate" @bind="NewAddress.State" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newpostalCode">Postal Code</label>
+                            <input type="text" class="form-control" id="newpostalCode" @bind="NewAddress.PostalCode" />
+                        </div>
+                        <div class="form-group">
+                            <label for="isDefault">Is Default</label>
+                            <input type="checkbox" class="form-check-input" id="isDefault" @bind="NewAddress.IsDefault" />
+                            <label class="form-check-label" for="isDefault">Default</label>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => ShowAddAddressModal = false">Close</button>
+                    <button class="btn btn-success" @onclick="AddNewAddress">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activează modalul -->
+    <script>
+        $(document).ready(function () {
+            $('#addAddressModal').modal('show');
+        });
+    </script>
+}
+
+
+
+@code {
+    [Inject]
+    public IAddressDataService AddressDataService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public ITokenService TokenService { get; set; }
+
+    public List<AddressViewModel> Addresses { get; set; }
+
+    private AddressViewModel EditingAddress { get; set; }
+
+    private AddressViewModel NewAddress { get; set; } = new AddressViewModel();
+    private bool ShowEditAddressModal { get; set; } = false;
+
+    private bool ShowAddAddressModal { get; set; } = false;
+
+
+
+
+    private void EditAddress(AddressViewModel address)
+    {
+        EditingAddress = new AddressViewModel
+            {
+                // Copiază valorile pentru a evita modificarea adresei originale în timpul editării
+                UserId = address.UserId,
+                AddressId = address.AddressId,
+                Street = address.Street,
+                City = address.City,
+                State = address.State,
+                PostalCode = address.PostalCode,
+                IsDefault = address.IsDefault
+            };
+
+        // Activează modalul
+        // ((IJSRuntime)JSRuntime).InvokeAsync<object>("$('#editAddressModal').modal", "show");
+        ShowEditAddressModal = true;
+    }
+
+
+
+    private async void DeleteAddress(Guid addressId)
+    {
+        // Implement the logic to delete the address with the specific addressId
+        await AddressDataService.DeleteAddressAsync(addressId);
+        // Refresh the address list after deletion
+        StateHasChanged();
+        await LoadAddresses();
+        StateHasChanged();
+    }
+
+    private async Task SaveEditedAddress()
+    {
+        try
+        {
+            if (EditingAddress != null)
+            {
+                var response = await AddressDataService.UpdateAddressAsync(EditingAddress);
+
+                if (response != null && response.IsSuccess)
+                {
+                    // Handle success, e.g., close the modal
+                    //await ((IJSRuntime)JSRuntime).InvokeAsync<object>("$('#editAddressModal').modal", "hide");
+                    ShowEditAddressModal = false;
+                    // Reload addresses after successful update
+                    StateHasChanged();
+                    await LoadAddresses();
+                    StateHasChanged();
+                }
+                else
+                {
+                    // Handle errors or validation failures, if any
+                    // You may want to display error messages to the user
+                    Console.WriteLine("Address update failed. Check for errors or validation failures.");
+                }
+            }
+            else
+            {
+                // Handle the case where EditingAddress is null
+                Console.WriteLine("EditingAddress is null. Cannot save changes.");
+                Console.WriteLine($"Adreess to edit :{EditAddress}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions if needed
+            Console.WriteLine($"Adreess to edit :{EditAddress}");
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private async void AddNewAddress()
+    {
+        try
+        {
+            // Set the UserId for the new address
+            var token = await TokenService.GetTokenAsync();
+            Guid userId = await TokenService.DecodeUserIdFromTokenAsync(token);
+            NewAddress.UserId = userId;
+            Console.WriteLine(NewAddress);
+            var response = await AddressDataService.CreateAddressAsync(NewAddress);
+
+            if (response != null && response.IsSuccess)
+            {
+                // Handle success, e.g., close the modal
+                ShowAddAddressModal = false;
+                // Reload addresses after successful creation
+                await InvokeAsync(StateHasChanged);
+                await LoadAddresses();
+                await InvokeAsync(StateHasChanged);
+
+            }
+            else
+            {
+                // Handle errors or validation failures, if any
+                // You may want to display error messages to the user
+                Console.WriteLine("Address creation failed. Check for errors or validation failures.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions if needed
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
+    private async Task LoadAddresses()
+    {
+        var token = await TokenService.GetTokenAsync();
+        Guid userId = await TokenService.DecodeUserIdFromTokenAsync(token);
+        if (userId == null || userId == Guid.Empty)
+            return;
+
+        Addresses = (await AddressDataService.GetUserAddressesAsync(userId)).ToList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAddresses();
+    }
+
+}

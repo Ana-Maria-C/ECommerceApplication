@@ -1,0 +1,369 @@
+﻿@page "/myaccount"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@using ECommerceApplication.App.Auth
+@inject CustomStateProvider authStateProvider
+
+<div class="profile-container">
+    <div class="profile-sidebar">
+
+    </div>
+    <div class="profile-content">
+@if (User != null)
+{
+    <div class="profile-first-row">
+        <div class="profile-card">
+            <div class="card-header">
+                <img src="/ronaldo.jpg" alt="Profile Picture"/>
+                <p>@User.Username</p>
+            </div>
+            <div class="profile-info">
+	            @if (!IsEditing)
+	            {
+		            <div class="profile-name">
+			            <span class="field-name">Name:</span>
+			            <span class="field-value">@($"{User.FirstName} {User.LastName}")</span>
+		            </div>
+		            <div class="profile-email">
+			            <span class="field-name">Email:</span>
+			            <span class="field-value">@User.Email</span>
+		            </div>
+		            <div class="profile-phone">
+			            <span class="field-name">Phone:</span>
+			            <span class="field-value">@User.PhoneNumber</span>
+		            </div>
+			    }
+	            @if (IsEditing)
+	            {
+		            <div class="profile-name">
+			            <span class="field-name">Name:</span>
+			            <input type="text" @bind="User.FirstName" />
+			            <input type="text" @bind="User.LastName" />
+		            </div>
+		            <div class="profile-email">
+			            <span class="field-name">Email:</span>
+			            <input type="text" @bind="User.Email" />
+		            </div>
+		            <div class="profile-phone">
+			            <span class="field-name">Phone:</span>
+			            <input type="text" @bind="User.PhoneNumber" />
+		            </div>
+	            }
+            </div>
+                <div class="profile-buttons">
+                @if (!IsEditing)
+                {
+	                <button class="edit-user-button" @onclick="StartEditing">Edit Profile</button>
+                }
+                @if (IsEditing)
+                {
+                    <button class="save-edit-button" @onclick="SaveChanges">Save</button>
+                    <button class="cancel-edit-button" @onclick="CancelEditing">Cancel</button>
+                }
+            </div>
+        </div>
+        <div class="thank-you-card">
+	        <p class="thank-you-text">Thank you for becoming a new client of <span class="ecommerce-text">ECommerce</span></p>
+	        <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1.70666in" height="1.70666in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 1707 1707" xmlns:xlink="http://www.w3.org/1999/xlink">
+		        <defs>
+			        <style type="text/css">
+
+        				.fil3 {
+					        fill: #1AA1FF
+				        }
+
+				        .fil0 {
+					        fill: #333333
+				        }
+
+				        .fil4 {
+					        fill: #7DD63E
+				        }
+
+				        .fil1 {
+					        fill: #C06000
+				        }
+
+				        .fil2 {
+					        fill: #FF9E5C
+				        }
+        			</style>
+		        </defs>
+		        <g id="Layer_x0020_1">
+			        <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+			        <path class="fil0" d="M178 842c-28,-44 -37,-84 -27,-120 10,-34 36,-53 49,-61 21,-39 65,-64 115,-64 51,0 95,25 115,64 14,8 41,27 51,62 11,35 2,75 -26,119 -5,18 17,89 -52,144l19 33 39 1c43,-75 124,-126 217,-126l34 0 33 -57c-97,-73 -67,-178 -73,-199 -39,-59 -51,-113 -37,-160 13,-47 49,-72 66,-81 26,-52 84,-86 152,-86 67,0 126,33 151,86 18,9 55,34 69,82 14,47 2,100 -36,159 -6,20 24,127 -75,199l33 57 34 0c92,0 174,51 217,126l39 -1 19 -33c-68,-56 -46,-126 -51,-144 -28,-44 -37,-84 -27,-120 10,-34 36,-53 50,-61 20,-39 64,-64 114,-64 51,0 95,25 115,64 14,8 41,27 51,62 11,35 2,75 -26,119 -5,18 17,89 -52,144l19 33 21 0c104,0 188,85 188,188l0 165c0,13 -11,23 -23,23l-1659 0c-13,0 -23,-10 -23,-23l0 -165c0,-103 84,-188 188,-188l21 0 19 -33c-50,-41 -51,-85 -51,-144zm608 -34c22,10 42,18 68,18 74,0 136,-60 136,-136l0 -57c-6,-176 -269,-119 -272,-1l0 58c0,50 28,94 68,118zm0 52l-33 56 100 132 100 -132 -32 -56c-42,17 -93,16 -135,0zm-98 -289c62,-110 274,-145 334,-5 11,-28 13,-52 6,-74 -15,-52 -55,-49 -63,-69 -35,-86 -189,-86 -225,0 -8,20 -46,17 -61,69 -6,23 -3,49 9,79zm-192 483c-14,35 -22,51 -22,91l0 204 110 0 0 -156c0,-30 47,-30 47,0l0 156 445 0 0 -156c0,-30 47,-30 47,0l0 156 109 0 0 -210c-2,-106 -91,-198 -203,-198l-36 0 -121 160c-9,12 -28,12 -37,0l-121 -160 -36 0c-80,0 -149,46 -182,113zm-61 30c2,-6 3,-12 5,-18l-20 0 -86 114c-9,12 -28,12 -37,0l-85 -114 -23 0c-78,0 -142,63 -142,141l0 142 381 0 0 -204c0,-21 2,-41 7,-61zm831 -18c9,26 13,52 13,79l0 204 380 0 0 -142c0,-78 -63,-141 -141,-141l-23 0 -86 114c-8,11 -28,11 -37,0l-85 -114 -21 0zm125 -49c-16,0 -32,-3 -46,-8l-19 32 65 86 65 -86 -19 -32c-14,5 -30,8 -46,8zm-92 -181c0,52 -3,93 49,123 59,34 135,-13 135,-81l0 -41c-4,-119 -180,-80 -184,-1zm-26 -59c53,-72 189,-89 239,-6 14,-61 -38,-65 -46,-85 -24,-57 -127,-57 -151,0 -8,20 -62,25 -42,91zm-865 59l0 0c-8,-122 -183,-74 -184,0 0,52 -3,92 49,123 59,35 135,-14 135,-81l0 -42zm-92 181c-16,0 -32,-3 -46,-8l-19 32 65 86 65 -86 -19 -32c-14,5 -30,8 -46,8zm120 -246c15,-61 -37,-65 -45,-85 -24,-57 -127,-57 -151,0 -8,20 -63,25 -42,91 54,-73 189,-89 238,-6z"></path>
+			        <path class="fil1" d="M679 492c-6,23 -3,49 9,79 62,-110 274,-145 334,-5 11,-28 13,-52 6,-74 -15,-52 -55,-49 -63,-69 -35,-86 -189,-86 -225,0 -8,20 -46,17 -61,69z"></path>
+			        <path class="fil2" d="M990 633c-6,-176 -269,-119 -272,-1l0 58c0,50 28,94 68,118 22,10 42,18 68,18 74,0 136,-60 136,-136l0 -57z"></path>
+			        <path class="fil2" d="M921 860c-42,17 -93,16 -135,0l-33 56 100 132 100 -132 -32 -56z"></path>
+			        <path class="fil3" d="M835 1101l-121 -160 -36 0c-80,0 -149,46 -182,113 -14,35 -22,51 -22,91l0 204 110 0 0 -156c0,-30 47,-30 47,0l0 156 445 0 0 -156c0,-30 47,-30 47,0l0 156 109 0 0 -210c-2,-106 -91,-198 -203,-198l-36 0 -121 160c-9,12 -28,12 -37,0z"></path>
+			        <path class="fil2" d="M316 1127l65 -86 -19 -32c-14,5 -30,8 -46,8 -16,0 -32,-3 -46,-8l-19 32 65 86z"></path>
+			        <path class="fil4" d="M297 1180l-85 -114 -23 0c-78,0 -142,63 -142,141l0 142 381 0 0 -204c0,-21 2,-41 7,-61 2,-6 3,-12 5,-18l-20 0 -86 114c-9,12 -28,12 -37,0z"></path>
+			        <path class="fil2" d="M273 959c59,35 135,-14 135,-81l0 -42 0 0c-8,-122 -183,-74 -184,0 0,52 -3,92 49,123z"></path>
+			        <path class="fil1" d="M198 777c54,-73 189,-89 238,-6 15,-61 -37,-65 -45,-85 -24,-57 -127,-57 -151,0 -8,20 -63,25 -42,91z"></path>
+			        <path class="fil1" d="M1466 686c-24,-57 -127,-57 -151,0 -8,20 -62,25 -42,91 53,-72 189,-89 239,-6 14,-61 -38,-65 -46,-85z"></path>
+			        <path class="fil2" d="M1483 837c-4,-119 -180,-80 -184,-1 0,52 -3,93 49,123 59,34 135,-13 135,-81l0 -41z"></path>
+			        <path class="fil2" d="M1437 1009c-14,5 -30,8 -46,8 -16,0 -32,-3 -46,-8l-19 32 65 86 65 -86 -19 -32z"></path>
+			        <path class="fil4" d="M1495 1066l-86 114c-8,11 -28,11 -37,0l-85 -114 -21 0c9,26 13,52 13,79l0 204 380 0 0 -142c0,-78 -63,-141 -141,-141l-23 0z"></path>
+		        </g>
+	        </svg>
+        </div>
+    </div>
+    <div class="profile-second-row">
+        <div class="second-row-card" @onclick="() => GoToOrdersHistory()">
+            <p class="second-row-text">My Orders</p>
+            <div class="svg-content">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
+                    <defs>
+                        <style>
+                            .cls-1 {
+                                fill: url(#linear-gradient);
+                            }
+
+                            .cls-2 {
+                                fill: url(#linear-gradient-2);
+                            }</style><linearGradient id="linear-gradient" x1="3" y1="31.41" x2="61" y2="31.41" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#17a6d7"></stop><stop offset="1" stop-color="#9d31fe"></stop></linearGradient><linearGradient id="linear-gradient-2" x1="14.73" y1="19.17" x2="27.74" y2="19.17" xlink:href="#linear-gradient"></linearGradient>
+                    </defs>
+                    <g id="Layer_24" data-name="Layer 24"><path class="cls-1" d="M60.92,40.79,55.25,27a1,1,0,0,0-.92-.62H43.82a1,1,0,0,0-1,1V45.6H40.43V19.17a1,1,0,0,0-1-1h-5A12.73,12.73,0,0,0,9,18.17H4a1,1,0,0,0-1,1V51a1,1,0,0,0,1,1H6.68a5.44,5.44,0,0,0,10.7,0h2.39a5.44,5.44,0,0,0,10.7,0H46.65a5.44,5.44,0,0,0,10.7,0H60a1,1,0,0,0,1-1V41.17A1,1,0,0,0,60.92,40.79Zm-2.41-.62h-7V28.38h2.2ZM42.82,50H30.47a5.48,5.48,0,0,0-1.08-2.36H42.82Zm-23,0H17.38a5.47,5.47,0,0,0-1.07-2.36h4.53A5.47,5.47,0,0,0,19.77,50ZM21.71,8.42A10.75,10.75,0,1,1,11,19.17,10.76,10.76,0,0,1,21.71,8.42ZM5,20.17H9a12.73,12.73,0,0,0,25.39,0h4V45.51H5ZM5,47.6H7.76A5.48,5.48,0,0,0,6.68,50H5Zm7,6.8a3.44,3.44,0,0,1-.77-6.8H12.8A3.44,3.44,0,0,1,12,54.4Zm13.08,0a3.44,3.44,0,0,1-.77-6.8h1.54a3.44,3.44,0,0,1-.77,6.8ZM52,54.4A3.45,3.45,0,1,1,55.45,51,3.45,3.45,0,0,1,52,54.4ZM57.35,50a5.44,5.44,0,0,0-10.7,0H44.82V28.38h4.64V41.17a1,1,0,0,0,1,1H59V50Z"></path><path class="cls-2" d="M19,24.41a1,1,0,0,0,.76.35h0a1,1,0,0,0,.77-.4l7-9.18a1,1,0,1,0-1.6-1.2l-6.2,8.18-3.25-3.82A1,1,0,1,0,15,19.63Z"></path></g>
+                </svg>
+            </div>
+        </div>
+        <div class="second-row-card">
+            <p class="second-row-text">My Addresses</p>
+                    <svg class="svg-content" id="Flat_gradient" data-name="Flat gradient" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" @onclick="() => OpenAddressesWindow()">
+                <defs>
+                    <style>
+                        .cls-1 {
+                            fill: url(#linear-gradient);
+                        }</style><linearGradient id="linear-gradient" x1="13.15002" y1="32.31067" x2="53.02981" y2="32.31067" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00c0ff"></stop><stop offset="1" stop-color="#5558ff"></stop></linearGradient>
+                </defs>
+                <title>1</title>
+                <path class="cls-1" d="M31.13,51.88a1.01413,1.01413,0,0,0,1.74,0L46.37,28.5C52.82506,17.70386,44.59288,3.4106,31.9998,3.62013A16.58486,16.58486,0,0,0,17.63,28.5ZM32,8.27A10.24267,10.24267,0,0,1,42.23,18.5c-.56312,13.57126-19.89891,13.5673-20.46-.00008A10.24268,10.24268,0,0,1,32,8.27ZM33.07,61C21.9,61,13.15,55.87,13.15,49.32c0-3.97,3.23-7.5,8.62-9.65.44313.75516,6.97894,12.08522,7.63,13.20993a3.02363,3.02363,0,0,0,5.2.00009c.60842-1.05317,7.61453-13.2017,7.99-13.83C61.78569,45.73764,52.085,61.27029,33.07,61Zm-9.3-42.4999C24.17926,7.59919,39.81909,7.59623,40.23,18.5a8.23,8.23,0,0,1-16.46.0001Z"></path>
+            </svg>
+        </div>
+        <div class="second-row-card" @onclick="() => GoToMyReviews()">
+            <p class="second-row-text">My Reviews</p>
+            <svg class="svg-content" version="1.1" id="Gradient" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="86.2947" y1="425.7053" x2="425.7053" y2="86.2947">
+                                <stop offset="0" style="stop-color:#5EBCE5"></stop>
+                                <stop offset="0.5075" style="stop-color:#B678E6"></stop>
+                                <stop offset="1" style="stop-color:#E25B61"></stop>
+                </linearGradient>
+                <path fill="url(#SVGID_1_)" d="M425.705,86.294C380.376,40.964,320.106,16,256,16S131.624,40.964,86.295,86.294
+	            C40.965,131.625,16,191.894,16,256s24.965,124.375,70.295,169.706C131.624,471.036,191.894,496,256,496
+	            s124.376-24.964,169.705-70.294C471.035,380.375,496,320.106,496,256S471.035,131.625,425.705,86.294z M112,416H99.256
+	            c-0.548-0.537-1.104-1.064-1.647-1.608C72.885,389.669,54.665,360.179,43.78,328H112V416z M414.392,414.392
+	            C372.084,456.7,315.832,480,256,480c-46.373,0-90.589-14.006-127.836-40H168c4.418,0,8-3.582,8-8h0.234
+	            c9.438,0,18.668,1.777,27.432,5.283l11.379,4.551c10.229,4.091,21,6.166,32.017,6.166H312c13.233,0,24-10.767,24-24
+	            c0-4.276-1.124-8.294-3.092-11.774C339.574,407.957,344,400.486,344,392c0-6.141-2.318-11.751-6.126-16
+	            c3.808-4.249,6.126-9.859,6.126-16s-2.318-11.751-6.126-16c3.808-4.249,6.126-9.859,6.126-16c0-13.233-10.767-24-24-24h-36.666
+	            c-0.348,0-0.635-0.138-0.852-0.409c-0.218-0.271-0.289-0.58-0.214-0.92l6.89-31.004c2.176-9.79-0.207-19.866-6.537-27.646
+	            c-6.329-7.778-15.711-12.169-25.752-12.018c-8.796,0.123-16.597,5.88-19.412,14.326l-10.616,31.849
+	            c-5.562,16.685-18.927,29.266-35.86,33.822H176c0-4.418-3.582-8-8-8h-48c-4.418,0-8,3.582-8,8H39.03
+	            C34.398,293.925,32,275.148,32,256c0-59.833,23.3-116.084,65.608-158.392C139.916,55.3,196.168,32,256,32
+	            s116.084,23.3,158.392,65.608C456.7,139.916,480,196.167,480,256S456.7,372.084,414.392,414.392z M128,424V320h32v104H128z M176,328
+	            h16c0.654,0,1.306-0.08,1.94-0.239c22.704-5.676,40.678-22.32,48.08-44.523l10.616-31.849c0.666-1.998,2.457-3.359,4.456-3.388
+	            c0.08-0.001,0.159-0.001,0.238-0.001c5.024,0,9.707,2.222,12.879,6.12c3.224,3.961,4.437,9.091,3.329,14.076l-6.89,31.003
+	            c-1.131,5.087,0.09,10.337,3.352,14.402c3.261,4.066,8.121,6.398,13.333,6.398H320c4.411,0,8,3.589,8,8s-3.589,8-8,8
+	            c-4.418,0-8,3.582-8,8s3.582,8,8,8c4.411,0,8,3.589,8,8s-3.589,8-8,8c-4.418,0-8,3.582-8,8s3.582,8,8,8c4.411,0,8,3.589,8,8
+	            s-3.589,8-8,8h-8c-4.418,0-8,3.582-8,8s3.582,8,8,8c4.411,0,8,3.589,8,8s-3.589,8-8,8h-64.938c-8.972,0-17.744-1.689-26.074-5.021
+	            l-11.379-4.551c-10.662-4.265-21.891-6.427-33.374-6.427H176V328z M296.636,133.746l28.842-27.098
+	            c2.244-2.108,3.079-5.317,2.147-8.252c-0.933-2.935-3.466-5.074-6.516-5.501l-40.105-5.617l-17.883-34.923
+	            C261.752,49.681,259.003,48,256,48s-5.752,1.681-7.121,4.354l-17.883,34.923l-40.105,5.617c-3.05,0.427-5.583,2.566-6.516,5.501
+	            c-0.932,2.935-0.097,6.144,2.147,8.252l28.842,27.098l-6.794,38.187c-0.531,2.985,0.671,6.015,3.105,7.823s5.681,2.085,8.387,0.714
+	            L256,162.259l35.938,18.211c1.143,0.579,2.382,0.864,3.615,0.864c1.688,0,3.365-0.534,4.771-1.578
+	            c2.435-1.809,3.637-4.838,3.105-7.823L296.636,133.746z M282.522,125.051c-1.97,1.851-2.872,4.571-2.398,7.232l4.745,26.667
+	            l-25.253-12.796c-1.137-0.576-2.376-0.864-3.616-0.864s-2.479,0.288-3.616,0.864l-25.253,12.796l4.745-26.667
+	            c0.474-2.661-0.429-5.381-2.398-7.232l-19.827-18.628l27.682-3.877c2.581-0.362,4.823-1.957,6.012-4.277L256,73.552l12.656,24.717
+	            c1.188,2.32,3.431,3.915,6.012,4.277l27.682,3.877L282.522,125.051z M193.109,146.755l-23.522-3.294l-10.466-20.44
+	            c-1.369-2.673-4.118-4.354-7.121-4.354s-5.752,1.681-7.121,4.354l-10.466,20.44l-23.522,3.294c-3.05,0.427-5.583,2.566-6.516,5.501
+	            c-0.932,2.935-0.097,6.144,2.147,8.252l16.842,15.823l-3.962,22.267c-0.531,2.986,0.671,6.015,3.105,7.824
+	            c2.434,1.809,5.681,2.084,8.387,0.714L152,196.441l21.105,10.695c1.143,0.579,2.382,0.864,3.615,0.864
+	            c1.688,0,3.365-0.534,4.771-1.578c2.435-1.809,3.637-4.838,3.105-7.824l-3.962-22.267l16.842-15.823
+	            c2.244-2.108,3.079-5.317,2.147-8.252C198.692,149.321,196.159,147.182,193.109,146.755z M166.522,167.637
+	            c-1.97,1.851-2.872,4.571-2.398,7.232l1.912,10.748l-10.42-5.28c-1.137-0.576-2.377-0.864-3.616-0.864s-2.479,0.288-3.616,0.864
+	            l-10.42,5.28l1.912-10.748c0.474-2.661-0.429-5.381-2.398-7.232l-7.827-7.354l11.099-1.554c2.581-0.362,4.824-1.958,6.012-4.277
+	            L152,144.22l5.239,10.233c1.188,2.319,3.431,3.915,6.012,4.277l11.099,1.554L166.522,167.637z M129.109,220.088l-23.522-3.294
+	            l-10.466-20.439C93.752,193.681,91.003,192,88,192s-5.752,1.681-7.121,4.354l-10.466,20.439l-23.522,3.294
+	            c-3.05,0.427-5.583,2.566-6.516,5.501c-0.932,2.935-0.097,6.144,2.147,8.252l16.842,15.824l-3.962,22.267
+	            c-0.531,2.986,0.671,6.015,3.105,7.824s5.681,2.084,8.387,0.714L88,269.775l21.105,10.695c1.143,0.579,2.382,0.864,3.615,0.864
+	            c1.688,0,3.365-0.534,4.771-1.578c2.435-1.809,3.637-4.838,3.105-7.824l-3.962-22.267l16.842-15.824
+	            c2.244-2.108,3.079-5.318,2.147-8.252C134.692,222.654,132.159,220.515,129.109,220.088z M102.522,240.971
+	            c-1.97,1.851-2.872,4.571-2.398,7.232l1.912,10.748l-10.42-5.28c-1.137-0.576-2.377-0.864-3.616-0.864s-2.479,0.288-3.616,0.864
+	            l-10.42,5.28l1.912-10.748c0.474-2.661-0.429-5.381-2.398-7.232l-7.827-7.354l11.099-1.554c2.581-0.362,4.824-1.958,6.012-4.277
+	            L88,217.553l5.239,10.232c1.188,2.319,3.431,3.915,6.012,4.277l11.099,1.554L102.522,240.971z M384.721,208
+	            c1.688,0,3.365-0.534,4.771-1.578c2.435-1.809,3.637-4.838,3.105-7.824l-3.962-22.267l16.842-15.823
+	            c2.244-2.108,3.079-5.317,2.147-8.252c-0.933-2.935-3.466-5.074-6.516-5.501l-23.522-3.294l-10.466-20.44
+	            c-1.369-2.673-4.118-4.354-7.121-4.354s-5.752,1.681-7.121,4.354l-10.466,20.44l-23.522,3.294c-3.05,0.427-5.583,2.566-6.516,5.501
+	            c-0.932,2.935-0.097,6.144,2.147,8.252l16.842,15.823l-3.962,22.267c-0.531,2.986,0.671,6.015,3.105,7.824
+	            c2.434,1.809,5.682,2.084,8.387,0.714L360,196.441l21.105,10.695C382.248,207.715,383.487,208,384.721,208z M372.124,174.87
+	            l1.912,10.748l-10.42-5.28c-1.137-0.576-2.377-0.864-3.616-0.864s-2.479,0.288-3.616,0.864l-10.42,5.28l1.912-10.748
+	            c0.474-2.661-0.429-5.381-2.398-7.232l-7.827-7.354l11.099-1.554c2.581-0.362,4.824-1.958,6.012-4.277L360,144.22l5.239,10.233
+	            c1.188,2.319,3.431,3.915,6.012,4.277l11.099,1.554l-7.827,7.354C372.553,169.488,371.65,172.208,372.124,174.87z M471.625,225.589
+	            c-0.933-2.935-3.466-5.074-6.516-5.501l-23.522-3.294l-10.466-20.439C429.752,193.681,427.003,192,424,192s-5.752,1.681-7.121,4.354
+	            l-10.466,20.439l-23.522,3.294c-3.05,0.427-5.583,2.566-6.516,5.501c-0.932,2.935-0.097,6.144,2.147,8.252l16.842,15.824
+	            l-3.962,22.267c-0.531,2.986,0.671,6.015,3.105,7.824s5.681,2.084,8.387,0.714L424,269.775l21.105,10.695
+	            c1.143,0.579,2.382,0.864,3.615,0.864c1.688,0,3.365-0.534,4.771-1.578c2.435-1.809,3.637-4.838,3.105-7.824l-3.962-22.267
+	            l16.842-15.824C471.722,231.733,472.557,228.523,471.625,225.589z M438.522,240.971c-1.97,1.851-2.872,4.571-2.398,7.232
+	            l1.912,10.748l-10.42-5.28c-1.137-0.576-2.377-0.864-3.616-0.864s-2.479,0.288-3.616,0.864l-10.42,5.28l1.912-10.748
+	            c0.474-2.661-0.429-5.381-2.398-7.232l-7.827-7.354l11.099-1.554c2.581-0.362,4.824-1.958,6.012-4.277L424,217.553l5.239,10.232
+	            c1.188,2.319,3.431,3.915,6.012,4.277l11.099,1.554L438.522,240.971z"></path>
+            </svg>
+        </div>
+    </div>
+    <div class="profile-third-row">
+        <div class="evaluation-card">
+            <div class="evaluation-first-part">
+                <p class="evaluate-text">Evaluate your experience with ECommerce</p>
+                <p class="evaluate-description-text">Based on your experience with ECommerce in recent months, what is the probability of recommending us to your loved ones? Grade 0 means 'I do not recommend at all', while 10 means 'I recommend with all confidence'.</p>
+            </div>
+            <div class="evaluation-second-part">
+                <form @onsubmit="SubmitEvaluationForm">
+                    <div class="evaluate-options">
+                        @for (int i = 1; i <= 10; i++)
+                        {
+                            <label class="option">
+                                <input type="radio" name="selectedOption" value="@i" @onchange="() => SetSelectedOption(i)">
+                                @i
+                            </label>
+                        }
+                    </div>
+                    <div class="evaluate-input-field">
+                        <textarea placeholder="Enter your text here" @bind="evaluationText"></textarea>
+                        <input type="hidden" name="evaluationText" value="@evaluationText">
+                    </div>
+                    <div class="evaluate-button-container">
+                        <button type="submit" class="send-evaluation-button">
+                            Send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>   
+    </div>
+}
+else
+{
+    <h3>You are not logged in</h3>
+}
+</div>
+</div>
+
+@code{
+    [Inject]
+    public IUserDataService UserDataService { get; set; }
+
+    [Inject]
+    public ITokenService TokenService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public UserViewModel User { get; set; }
+    private string email;
+    private string error;
+
+    private bool IsEditing { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+	    var token = await TokenService.GetTokenAsync();
+	    if (token != null)
+	    {
+		    email = await TokenService.DecodeEmailFromTokenAsync(token);
+
+		    if (!string.IsNullOrEmpty(email))
+		    {
+			    User = await UserDataService.GetUserByEmailAsync(email);
+		    }
+	    }
+    }
+
+
+    private void GoToOrdersHistory()
+    {
+
+    }
+
+    private void OpenAddressesWindow()
+    {
+        NavigationManager.NavigateTo("/useraddresses");
+    }
+
+    private void GoToMyReviews()
+    {
+        
+    }
+
+    private string evaluationText;
+    private int selectedOption;
+
+    private void SetSelectedOption(int option)
+    {
+        selectedOption = option;
+    }
+
+    private async Task SubmitEvaluationForm()
+    {
+        // Handle the form submission logic here
+        Console.WriteLine($"Selected Option: {selectedOption}");
+        Console.WriteLine($"Evaluation Text: {evaluationText}");
+
+        // Add additional logic to process the form data as needed
+    }
+
+    // Method to start editing
+    private void StartEditing()
+    {
+        IsEditing = true;
+    }
+
+    // Method to cancel editing
+    private void CancelEditing()
+    {
+        IsEditing = false;
+        // Reload user data to discard any changes made during editing
+        //LoadUserData();
+    }
+
+    // Method to save changes
+    private async Task SaveChanges()
+    {
+        // Save changes to the database (update user information)
+        await UpdateProfile();
+        IsEditing = false;
+    }
+
+    private async Task UpdateProfile()
+    {
+
+	    try
+	    {
+		    UpdateUserDto updateUserDto = new UpdateUserDto
+		    {
+			    Id = User.UserId,
+			    Username = User.Username,
+			    Email = User.Email,
+			    FirstName = User.FirstName,
+			    LastName = User.LastName,
+                PhoneNumber = User.PhoneNumber,
+                Role = User.Role
+		    };
+		    Console.WriteLine("Updating user profile");
+
+		    var result = await UserDataService.UpdateUserAsync(User.UserId, updateUserDto);
+
+		    if (result.IsSuccess)
+		    {
+                NavigationManager.NavigateTo($"/myaccount");
+			    await authStateProvider.Logout();
+			    NavigationManager.NavigateTo("/login");
+		    }
+
+	    }
+	    catch (Exception ex)
+	    {
+		    error = "Something went wrong updating the profile";
+	    }
+    }
+
+}

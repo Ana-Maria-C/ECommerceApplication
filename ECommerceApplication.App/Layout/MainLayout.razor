@@ -1,0 +1,26 @@
+﻿@using ECommerceApplication.App.Auth
+@using ECommerceApplication.App.Contracts
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+@inject ITokenService TokenService
+@inherits LayoutComponentBase
+
+<Navbar />
+<NavMenu />
+<div class="custom-page">
+    <main>
+        @Body
+    </main>
+</div>
+
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await TokenService.GetTokenAsync();
+        if (token == null)
+        {
+            navigationManager.NavigateTo("/login");
+        }
+    }
+}

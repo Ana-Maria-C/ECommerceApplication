@@ -1,0 +1,107 @@
+﻿@page "/updateorderitem"
+@using ECommerceApplication.App.Contracts
+@using ECommerceApplication.App.ViewModels
+@inject IOrderItemDataService orderItemDataService
+<h3>Update OrderItem</h3>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="orderItemId" class="form-label">OrderItem ID</label>
+                <input type="text" class="form-control" @bind="orderItemId" id="orderItemId" />
+            </div>
+            <div class="mb-3">
+                <label for="newProductId" class="form-label">New Product Id</label>
+                <input type="text" class="form-control" @bind="newProductId" id="newProductId" />
+            </div>
+            <div class="mb-3">
+                <label for="newQuantity" class="form-label">New Product Quantity</label>
+                <input type="number" class="form-control" @bind="newQuantity" id="newQuantity" />
+            </div>
+            <div class="mb-3">
+                <label for="newPricePerUnit" class="form-label">New Price per unit</label>
+                <input type="text" class="form-control" @bind="newPricePerUnit" id="newPricePerUnit" />
+            </div>
+
+            <button class="btn btn-primary" @onclick="HandleUpdateOrderItem">Update OrderItem</button>
+            <p class="mt-3">@updateMessage</p>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public Guid orderItemId;
+    private string newProductId;
+    private int newQuantity;
+    private decimal newPricePerUnit;
+    private string updateMessage = "";
+
+    private async Task HandleUpdateOrderItem()
+    {
+        if (orderItemId != Guid.Empty)
+        {
+            try
+            {
+                var orderItems = await orderItemDataService.GetOrderItemsAsync();
+                Console.WriteLine(orderItems);
+                bool orderItemExists = orderItems.Any(orderItem => orderItem.OrderItemId == orderItemId);
+
+                if (orderItemExists)
+                {
+                    var currentOrderItem = orderItems.FirstOrDefault(orderItem => orderItem.OrderItemId == orderItemId);
+
+                    if (currentOrderItem != null)
+                    {
+                        if (!String.IsNullOrWhiteSpace(newProductId) && newQuantity > 0 && newPricePerUnit > 0)
+                        {
+
+                            var updatedOrderItem = new OrderItemViewModel
+                                {
+                                    OrderItemId = orderItemId,
+                                    ProductId = Guid.Parse(newProductId),
+                                    Quantity = newQuantity,
+                                    PricePerUnit = newPricePerUnit
+                                };
+
+                            var response = await orderItemDataService.UpdateOrderItemAsync(updatedOrderItem);
+
+                            if (response != null && response.IsSuccess)
+                            {
+                                updateMessage = "OrderItem updated successfully!";
+                                // Handle success
+                            }
+                            else
+                            {
+                                updateMessage = "Failed to update orderItem. Please try again.";
+                                // Handle failure
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        updateMessage = "OrderItem with specified ID not found.";
+                        // Handle case where orderItem with specified ID doesn't exist
+                    }
+                }
+                else
+                {
+                    updateMessage = "OrderItem does not exist.";
+                }
+            }
+            catch (Exception ex)
+            {
+                updateMessage = "Failed to update orderItem. Please try again.";
+                // Handle exception
+            }
+        }
+        else
+        {
+            updateMessage = "Please enter a valid orderItemID and new orderItem quantity and new orderItem price per unit.";
+        }
+    }
+
+
+}
